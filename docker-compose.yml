@@ -54,3 +54,11 @@ services:
     image: redis:6.0-alpine
     env_file: 
       - .env
+      
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    env_file: 
+      - .env
