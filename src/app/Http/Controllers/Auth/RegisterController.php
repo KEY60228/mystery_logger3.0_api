@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use App\Models\EmailVerification;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmailVerificationMail;
 
 class RegisterController extends Controller
 {
@@ -84,12 +86,15 @@ class RegisterController extends Controller
 
       $this->validate($request, $emailValidator);
 
-      EmailVerification::create([
+      $email_verification = EmailVerification::create([
         'email' => $request->json('email'),
         'token' => Str::random(250),
         'status' => EmailVerification::SEND_MAIL,
         'expiration_time' => Carbon::now()->addHours(1),
       ]);
+
+      $mail = new EmailVerificationMail($email_verification);
+      Mail::to($email_verification->email)->send($mail);
 
       return Response::json([], 201);
     }
