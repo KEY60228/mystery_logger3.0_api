@@ -39,7 +39,7 @@ class PreRegisterApiTest extends TestCase
     Mail::assertSent(EmailVerification::class, 1);
     
     $this->assertEquals($data['email'], $preUser->email);
-    $this->assertEquals(0, $preUser->status);
+    $this->assertEquals(PreRegister::SEND_MAIL, $preUser->status);
     $this->assertEquals(Carbon::now()->addHours(1), $preUser->expiration_time);
     $response->assertStatus(201);
   }
@@ -53,7 +53,7 @@ class PreRegisterApiTest extends TestCase
 
     factory(PreRegister::class)->create([
       'email' => 'dummy@dummy.com',
-      'status' => 0,
+      'status' => PreRegister::SEND_MAIL,
     ]);
 
     $data = [
@@ -67,7 +67,7 @@ class PreRegisterApiTest extends TestCase
     Mail::assertSent(EmailVerification::class, 1);
     
     $this->assertEquals($data['email'], $preUser->email);
-    $this->assertEquals(0, $preUser->status);
+    $this->assertEquals(PreRegister::SEND_MAIL, $preUser->status);
     $this->assertEquals(Carbon::now()->addHours(1), $preUser->expiration_time);
     $response->assertStatus(201);
   }
@@ -81,7 +81,7 @@ class PreRegisterApiTest extends TestCase
 
     factory(PreRegister::class)->create([
       'email' => 'dummy@dummy.com',
-      'status' => 1,
+      'status' => PreRegister::MAIL_VERIFY,
     ]);
 
     $data = [
@@ -95,7 +95,7 @@ class PreRegisterApiTest extends TestCase
     Mail::assertSent(EmailVerification::class, 1);
     
     $this->assertEquals($data['email'], $preUser->email);
-    $this->assertEquals(1, $preUser->status);
+    $this->assertEquals(PreRegister::MAIL_VERIFY, $preUser->status);
     $this->assertEquals(Carbon::now()->addHours(1), $preUser->expiration_time);
     $response->assertStatus(201);
   }
