@@ -112,7 +112,11 @@ class RegisterController extends Controller
     {
       $preUser = PreRegister::whereToken($request->json('token'))->first();
 
-      if(is_null($preUser) || $preUser->status === PreRegister::REGISTERED) {
+      if (
+        is_null($preUser)
+        || $preUser->status == PreRegister::REGISTERED
+        || Carbon::now()->gt($preUser->expiration_time)
+      ) {
         return Response::json([], 422);
       }
 
