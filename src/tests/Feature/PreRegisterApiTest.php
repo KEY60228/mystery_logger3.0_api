@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmailVerificationMail;
 
 class PreRegisterApiTest extends TestCase
 {
@@ -24,6 +26,8 @@ class PreRegisterApiTest extends TestCase
    */
   public function should_仮登録してメールを送信する()
   {
+    Mail::fake();
+
     $data = [
       'email' => 'dummy@dummy.com',
     ];
@@ -31,6 +35,8 @@ class PreRegisterApiTest extends TestCase
     $response = $this->json('POST', route('preregister'), $data);
 
     $preuser = EmailVerification::first();
+
+    Mail::assertSent(EmailVerificationMail::class, 1);
     
     $this->assertEquals($data['email'], $preuser->email);
     $this->assertEquals(0, $preuser->status);
