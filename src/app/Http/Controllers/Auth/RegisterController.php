@@ -86,15 +86,24 @@ class RegisterController extends Controller
 
       $this->validate($request, $emailValidator);
 
-      $preregister = PreRegister::create([
-        'email' => $request->json('email'),
-        'token' => Str::random(250),
-        'status' => PreRegister::SEND_MAIL,
-        'expiration_time' => Carbon::now()->addHours(1),
-      ]);
+      $preRegister = PreRegister::whereEmail($request->json('email'))->first();
 
-      $mail = new EmailVerification($preregister);
-      Mail::to($preregister->email)->send($mail);
+      if ($preRegister) {
+        $preRegister->update([
+          'token' => Str::random(250),
+          'expiration_time' => Carbon::now()->addHours(1),
+        ]);
+      } else {
+        $preRegister = PreRegister::create([
+          'email' => $request->json('email'),
+          'token' => Str::random(250),
+          'status' => PreRegister::SEND_MAIL,
+          'expiration_time' => Carbon::now()->addHours(1),
+        ]);
+      }
+
+      $mail = new EmailVerification($preRegister);
+      Mail::to($preRegister->email)->send($mail);
 
       return Response::json([], 201);
     }
