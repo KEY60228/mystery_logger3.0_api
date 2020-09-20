@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
-use App\Models\EmailVerification;
+use App\Models\PreRegister;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\EmailVerificationMail;
+use App\Mail\EmailVerification;
 
 class RegisterController extends Controller
 {
@@ -78,7 +78,7 @@ class RegisterController extends Controller
         ]);
     }
 
-    public function emailVerification(Request $request)
+    public function preregister(Request $request)
     {
       $emailValidator = [
         'email' => ['required', 'string', 'email', 'unique:users'],
@@ -86,15 +86,15 @@ class RegisterController extends Controller
 
       $this->validate($request, $emailValidator);
 
-      $email_verification = EmailVerification::create([
+      $preregister = PreRegister::create([
         'email' => $request->json('email'),
         'token' => Str::random(250),
-        'status' => EmailVerification::SEND_MAIL,
+        'status' => PreRegister::SEND_MAIL,
         'expiration_time' => Carbon::now()->addHours(1),
       ]);
 
-      $mail = new EmailVerificationMail($email_verification);
-      Mail::to($email_verification->email)->send($mail);
+      $mail = new EmailVerification($preregister);
+      Mail::to($preregister->email)->send($mail);
 
       return Response::json([], 201);
     }

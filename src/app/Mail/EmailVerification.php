@@ -3,26 +3,26 @@
 namespace App\Mail;
 
 use App\Models\User;
-use App\Models\EmailVerification;
+use App\Models\PreRegister;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class EmailVerificationMail extends Mailable
+class EmailVerification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    protected $email_verification;
+    protected $preregister;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(EmailVerification $email_verification)
+    public function __construct(PreRegister $preregister)
     {
-      $this->email_verification = $email_verification;
+      $this->preregister = $preregister;
     }
 
     /**
@@ -35,9 +35,9 @@ class EmailVerificationMail extends Mailable
       return $this->subject('【なぞログ】仮登録が完了しました')
                   ->text('emails.preregister')
                   ->with([
-                    'email' => $this->email_verification->email,
-                    'token' => $this->email_verification->token,
-                    'expiration_time' => $this->email_verification->expiration_time,
+                    'email' => $this->preregister->email,
+                    'token' => $this->preregister->token,
+                    'expiration_time' => $this->preregister->expiration_time,
                   ]);
     }
 }

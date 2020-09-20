@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EmailVerification extends Model
+class PreRegister extends Model
 {
   const SEND_MAIL = 0;
   const MAIL_VERIFY = 1;

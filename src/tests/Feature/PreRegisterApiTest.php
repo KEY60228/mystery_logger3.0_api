@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\EmailVerification;
+use App\Models\PreRegister;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\EmailVerificationMail;
+use App\Mail\EmailVerification;
 
 class PreRegisterApiTest extends TestCase
 {
@@ -34,9 +34,9 @@ class PreRegisterApiTest extends TestCase
 
     $response = $this->json('POST', route('preregister'), $data);
 
-    $preuser = EmailVerification::first();
+    $preuser = PreRegister::first();
 
-    Mail::assertSent(EmailVerificationMail::class, 1);
+    Mail::assertSent(EmailVerification::class, 1);
     
     $this->assertEquals($data['email'], $preuser->email);
     $this->assertEquals(0, $preuser->status);
