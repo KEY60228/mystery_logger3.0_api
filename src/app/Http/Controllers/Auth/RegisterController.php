@@ -4,10 +4,15 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
-use App\User;
+use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Http\Request;
+use App\Models\EmailVerification;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class RegisterController extends Controller
 {
@@ -60,7 +65,7 @@ class RegisterController extends Controller
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
-     * @return \App\User
+     * @return \App\Models\User
      */
     protected function create(array $data)
     {
@@ -69,5 +74,23 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    public function emailVerification(Request $request)
+    {
+      $emailValidator = [
+        'email' => ['required', 'string', 'email', 'unique:users'],
+      ];
+
+      $this->validate($request, $emailValidator);
+
+      EmailVerification::create([
+        'email' => $request->json('email'),
+        'token' => Str::random(250),
+        'status' => EmailVerification::SEND_MAIL,
+        'expiration_time' => Carbon::now()->addHours(1),
+      ]);
+
+      return Response::json([], 201);
     }
 }
