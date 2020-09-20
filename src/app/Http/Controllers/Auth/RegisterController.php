@@ -122,6 +122,8 @@ class RegisterController extends Controller
 
       $preUser->update(['status' => PreRegister::MAIL_VERIFY]);
 
-      return Response::json([], 200);
+      return Response::json([
+        'email' => $preUser->email,
+      ], 200);
     }
 }
