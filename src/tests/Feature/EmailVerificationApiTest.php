@@ -35,6 +35,7 @@ class EmailVerificationApiTest extends TestCase
 
     $response = $this->json('POST', route('verify'), $data);
 
+    $this->assertEquals($preUser->email, $response['email']);
     $response->assertStatus(200);
   }
   
@@ -45,14 +46,15 @@ class EmailVerificationApiTest extends TestCase
   {
     $preUser = factory(PreRegister::class)->create([
       'status' => PreRegister::MAIL_VERIFY,
-    ]);
+      ]);
 
-    $data = [
+      $data = [
       'token' => $preUser->token,
     ];
     
     $response = $this->json('POST', route('verify'), $data);
     
+    $this->assertEquals($preUser->email, $response['email']);
     $response->assertStatus(200);
   }
   
