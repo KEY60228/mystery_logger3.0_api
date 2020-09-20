@@ -98,4 +98,17 @@ class RegisterController extends Controller
 
       return Response::json([], 201);
     }
+
+    public function verify(Request $request)
+    {
+      $preUser = PreRegister::whereToken($request->json('token'))->first();
+
+      if(is_null($preUser) || $preUser->status === PreRegister::REGISTERED) {
+        return Response::json([], 422);
+      }
+
+      $preUser->update(['status' => PreRegister::MAIL_VERIFY]);
+
+      return Response::json([], 200);
+    }
 }

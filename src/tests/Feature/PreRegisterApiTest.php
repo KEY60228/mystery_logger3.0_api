@@ -34,13 +34,13 @@ class PreRegisterApiTest extends TestCase
 
     $response = $this->json('POST', route('preregister'), $data);
 
-    $preuser = PreRegister::first();
+    $preUser = PreRegister::first();
 
     Mail::assertSent(EmailVerification::class, 1);
     
-    $this->assertEquals($data['email'], $preuser->email);
-    $this->assertEquals(0, $preuser->status);
-    $this->assertEquals(Carbon::now()->addHours(1), $preuser->expiration_time);
+    $this->assertEquals($data['email'], $preUser->email);
+    $this->assertEquals(0, $preUser->status);
+    $this->assertEquals(Carbon::now()->addHours(1), $preUser->expiration_time);
     $response->assertStatus(201);
   }
 
