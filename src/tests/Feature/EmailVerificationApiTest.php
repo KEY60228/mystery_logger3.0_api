@@ -36,6 +36,7 @@ class EmailVerificationApiTest extends TestCase
     $response = $this->json('POST', route('verify'), $data);
 
     $this->assertEquals($preUser->email, $response['email']);
+    $this->assertEquals($preUser->id, $response['pre_register_id']);
     $response->assertStatus(200);
   }
   
@@ -49,12 +50,13 @@ class EmailVerificationApiTest extends TestCase
       ]);
 
       $data = [
-      'token' => $preUser->token,
-    ];
+        'token' => $preUser->token,
+      ];
     
-    $response = $this->json('POST', route('verify'), $data);
+      $response = $this->json('POST', route('verify'), $data);
     
-    $this->assertEquals($preUser->email, $response['email']);
+      $this->assertEquals($preUser->email, $response['email']);
+      $this->assertEquals($preUser->id, $response['pre_register_id']);
     $response->assertStatus(200);
   }
   
