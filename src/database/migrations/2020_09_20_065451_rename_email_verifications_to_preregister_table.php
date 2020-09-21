@@ -23,8 +23,6 @@ class RenameEmailVerificationsToPreregisterTable extends Migration
      */
     public function down()
     {
-        Schema::table('preregister', function (Blueprint $table) {
-            //
-        });
+        Schema::rename('pre_registers', 'email_verifications');
     }
 }
