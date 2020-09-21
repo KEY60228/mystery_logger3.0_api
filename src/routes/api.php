@@ -13,9 +13,17 @@ use Illuminate\Http\Request;
 |
 */
 
+// 仮登録
 Route::post('/preregister', 'Auth\RegisterController@preregister')->name('preregister');
+
+// メールアドレス認証
 Route::post('/register/verify', 'Auth\RegisterController@verify')->name('verify');
+
+// 本登録
 Route::post('/register', 'Auth\RegisterController@register')->name('register');
+
+// ログイン
+Route::post('/login', 'Auth\LoginController@login')->name('login');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
