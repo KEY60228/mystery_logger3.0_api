@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailVerification;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -57,8 +58,8 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
+            'account_id' => ['required', 'string', 'max:16', 'unique:users'],
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }
@@ -72,12 +73,21 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
+            'account_id' => $data['account_id'],
             'name' => $data['name'],
             'email' => $data['email'],
+            'pre_register_id' => $data['pre_register_id'],
             'password' => Hash::make($data['password']),
+            'image_name' => 'default',
         ]);
     }
 
+    /**
+     * 仮登録処理
+     * 
+     * @param Illuminate\Http\Request $request
+     * @return Illuminate\Support\Facades\Response
+     */
     public function preregister(Request $request)
     {
       $emailValidator = [
@@ -86,9 +96,7 @@ class RegisterController extends Controller
 
       $this->validate($request, $emailValidator);
 
-      $preRegister = PreRegister::whereEmail($request->json('email'))->first();
-
-      if ($preRegister) {
+      if ($preRegister = PreRegister::whereEmail($request->json('email'))->first()) {
         $preRegister->update([
           'token' => Str::random(250),
           'expiration_time' => Carbon::now()->addHours(1),
@@ -108,6 +116,12 @@ class RegisterController extends Controller
       return Response::json([], 201);
     }
 
+    /**
+     * メールアドレス認証処理
+     * 
+     * @param Illuminate\Http\Request $request
+     * @return Illuminate\Support\Facades\Response
+     */
     public function verify(Request $request)
     {
       $preUser = PreRegister::whereToken($request->json('token'))->first();
@@ -124,6 +138,41 @@ class RegisterController extends Controller
 
       return Response::json([
         'email' => $preUser->email,
+        'pre_register_id' => $preUser->id,
       ], 200);
+    }
+
+    /**
+     * 本登録処理
+     * 
+     * @param Illuminate\Http\Request $request
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function register(Request $request)
+    {
+      $this->validator($request->all())->validate();
+
+      $preUser = PreRegister::find($request->json('pre_register_id'))->first();
+
+      if (
+        is_null($preUser)
+        || $preUser->status != PreRegister::MAIL_VERIFY
+        || $preUser->email != $request->json('email')
+      ) {
+        return Response::json([], 422);
+      }
+
+      event(new Registered($user = $this->create($request->all())));
+      $preUser->update([
+        'status' => PreRegister::REGISTERED,
+      ]);
+
+      $this->guard()->login($user);
+
+      // ToDo: Cookieの付与
+      return Response::json([
+        'account_id' => $user->account_id,
+        'name' => $user->name,
+      ], 201);
     }
 }

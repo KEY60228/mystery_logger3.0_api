@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 
 Route::post('/preregister', 'Auth\RegisterController@preregister')->name('preregister');
 Route::post('/register/verify', 'Auth\RegisterController@verify')->name('verify');
+Route::post('/register', 'Auth\RegisterController@register')->name('register');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
