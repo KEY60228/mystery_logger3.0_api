@@ -9,6 +9,7 @@ use Tests\TestCase;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailVerification;
+use App\Models\User;
 
 class PreRegisterApiTest extends TestCase
 {
@@ -119,23 +120,18 @@ class PreRegisterApiTest extends TestCase
    * 
    * @test
    */
-  // public function 不正系_本登録済メールアドレス()
-  // {
-  //   Mail::fake();
+  public function 不正系_本登録済メールアドレス()
+  {
+    Mail::fake();
 
-  //   $preregister = PreRegister::create([
-  //     'email' => 'dummy@dummy.com',
-  //     'token' => \Illuminate\Support\Str::random(250),
-  //     'status' => PreRegister::REGISTERED,
-  //     'expiration_time' => Carbon::now()->addHours(1),
-  //   ]);
+    $existUser = factory(User::class)->create();
 
-  //   $data = [
-  //     'email' => 'dummy@dummy.com',
-  //   ];
+    $data = [
+      'email' => $existUser->email,
+    ];
 
-  //   $response = $this->json('POST', route('preregister'), $data);
+    $response = $this->json('POST', route('preregister'), $data);
 
-  //   $response->assertStatus(422);
-  // }
+    $response->assertStatus(422);
+  }
 }
