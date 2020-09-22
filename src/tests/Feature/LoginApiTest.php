@@ -32,6 +32,7 @@ class LoginApiTest extends TestCase
     $response->assertStatus(200);
     $this->assertEquals($this->user->account_id, $response['account_id']);
     $this->assertEquals($this->user->name, $response['name']);
+    $this->assertAuthenticatedAs($this->user);
   }
 
   /**
