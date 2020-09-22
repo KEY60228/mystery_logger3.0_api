@@ -9,7 +9,7 @@
 
 {{ $expiration_time }}までに下記のURLへアクセスして、メールアドレスの認証を行ってください。
 
-{{ 'https://localhost:30443/register/verify?token=' . $token }}
+{{ 'https://localhost:30443/register?token=' . $token }}
 
 ({{ $expiration_time }}を経過してしまった場合は、お手数ですが再度メールアドレス登録画面から再入力をお願い致します。)
 

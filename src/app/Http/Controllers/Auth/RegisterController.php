@@ -152,14 +152,14 @@ class RegisterController extends Controller
     {
       $this->validator($request->all())->validate();
 
-      $preUser = PreRegister::find($request->json('pre_register_id'))->first();
+      $preUser = PreRegister::find($request->json('pre_register_id'));
 
       if (
         is_null($preUser)
         || $preUser->status != PreRegister::MAIL_VERIFY
         || $preUser->email != $request->json('email')
       ) {
-        return Response::json([], 422);
+        return Response::json(['errors' => 'error!'], 422);
       }
 
       event(new Registered($user = $this->create($request->all())));
