@@ -47,4 +47,9 @@ class LoginController extends Controller
         'name' => $user->name,
       ], 200);
     }
+
+    protected function loggedOut(Request $request)
+    {
+      return Response::json([], 200);
+    }
 }
