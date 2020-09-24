@@ -13,4 +13,10 @@ class ProductController extends Controller
 
     return Response::json($products, 200);
   }
+
+  public function show(Request $request, $id) {
+    $product = Product::find($id);
+
+    return Response::json($product, 200);
+  }
 }

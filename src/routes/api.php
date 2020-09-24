@@ -31,6 +31,9 @@ Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
 // 全作品取得
 Route::get('/products', 'ProductController@index')->name('products');
 
+// 一作品取得
+Route::get('/products/{id}', 'ProductController@show')->name('product.show');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
