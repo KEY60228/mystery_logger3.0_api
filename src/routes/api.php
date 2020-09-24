@@ -34,6 +34,9 @@ Route::get('/products', 'ProductController@index')->name('products');
 // 一作品取得
 Route::get('/products/{id}', 'ProductController@show')->name('product.show');
 
+// ユーザー情報取得
+Route::get('/users/{userId}', 'UserController@show')->name('user.show');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
