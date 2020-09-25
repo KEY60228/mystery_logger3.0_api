@@ -37,6 +37,9 @@ Route::get('/products/{id}', 'ProductController@show')->name('product.show');
 // ユーザー情報取得
 Route::get('/users/{userId}', 'UserController@show')->name('user.show');
 
+// レビュー登録
+Route::post('/review', 'ReviewController@post')->name('review');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
