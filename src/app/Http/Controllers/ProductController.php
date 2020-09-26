@@ -15,7 +15,7 @@ class ProductController extends Controller
   }
 
   public function show(Request $request, $id) {
-    $product = Product::find($id);
+    $product = Product::whereId($id)->with(['reviews', 'reviews.user'])->first();
 
     return Response::json($product, 200);
   }
