@@ -26,4 +26,10 @@ class ReviewController extends Controller
 
     return Response::json([], 201);
   }
+
+  public function show(Request $request, $id) {
+    $review = Review::whereId($id)->with(['user', 'product'])->first();
+
+    return Response::json($review, 200);
+  }
 }
