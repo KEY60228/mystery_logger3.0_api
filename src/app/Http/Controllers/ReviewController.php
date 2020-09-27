@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use App\Http\Requests\PostReviewRequest;
+use App\Http\Requests\UpdateReviewRequest;
 use App\Models\Review;
 
 class ReviewController extends Controller
@@ -31,5 +32,17 @@ class ReviewController extends Controller
     $review = Review::whereId($id)->with(['user', 'product'])->first();
 
     return Response::json($review, 200);
+  }
+
+  public function update(UpdateReviewRequest $request, $id) {
+    $review = Review::find($id)->update([
+      'contents' => $request->contents,
+      'result' => $request->result,
+      'clear_time' => $request->clear_time,
+      'rating' => $request->rating,
+      'joined_at' => $request->joined_at,
+    ]);
+
+    return Response::json([], 200);
   }
 }

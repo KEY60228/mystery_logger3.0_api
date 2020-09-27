@@ -43,6 +43,9 @@ Route::post('/review', 'ReviewController@post')->name('review');
 // 一レビュー取得
 Route::get('/reviews/{reviewId}', 'ReviewController@show')->name('review.show');
 
+// レビュー更新
+Route::put('/reviews/{reviewId}', 'ReviewController@update')->name('review.update');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
