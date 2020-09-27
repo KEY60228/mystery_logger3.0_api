@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Product;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -23,7 +23,7 @@ class GetAllProductsApiTest extends TestCase
    */
   public function 正常系()
   {
-    $response = $this->json('GET', route('products'));
+    $response = $this->json('GET', route('product.index'));
 
     $response->assertStatus(200)->assertJsonFragment([
       'name' => $this->product->name,

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Review;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -35,7 +35,7 @@ class PostReviewApiTest extends TestCase
       'joined_at' => '2020/9/24',
     ];
 
-    $response = $this->json('POST', route('review'), $data);
+    $response = $this->json('POST', route('review.post'), $data);
 
     $review = Review::first();
 
@@ -59,7 +59,7 @@ class PostReviewApiTest extends TestCase
       'joined_at' => '2020/9/20'
     ];
     
-    $response = $this->json('POST', route('review'), $data);
+    $response = $this->json('POST', route('review.post'), $data);
   
     $review = Review::first();
   
@@ -82,7 +82,7 @@ class PostReviewApiTest extends TestCase
       'joined_at' => '2020/9/20'
     ];
     
-    $response = $this->json('POST', route('review'), $data);
+    $response = $this->json('POST', route('review.post'), $data);
   
     $review = Review::first();
   
@@ -105,7 +105,7 @@ class PostReviewApiTest extends TestCase
       'joined_at' => '2020/9/20'
     ];
     
-    $response = $this->json('POST', route('review'), $data);
+    $response = $this->json('POST', route('review.post'), $data);
   
     $review = Review::first();
   
@@ -128,7 +128,7 @@ class PostReviewApiTest extends TestCase
       'joined_at' => '2020/10/20'
     ];
     
-    $response = $this->json('POST', route('review'), $data);
+    $response = $this->json('POST', route('review.post'), $data);
   
     $review = Review::first();
   

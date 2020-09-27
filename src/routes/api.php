@@ -29,7 +29,7 @@ Route::post('/login', 'Auth\LoginController@login')->name('login');
 Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
 
 // 全作品取得
-Route::get('/products', 'ProductController@index')->name('products');
+Route::get('/products', 'ProductController@index')->name('product.index');
 
 // 一作品取得
 Route::get('/products/{id}', 'ProductController@show')->name('product.show');
@@ -38,7 +38,7 @@ Route::get('/products/{id}', 'ProductController@show')->name('product.show');
 Route::get('/users/{userId}', 'UserController@show')->name('user.show');
 
 // レビュー登録
-Route::post('/review', 'ReviewController@post')->name('review');
+Route::post('/reviews', 'ReviewController@post')->name('review.post');
 
 // 一レビュー取得
 Route::get('/reviews/{reviewId}', 'ReviewController@show')->name('review.show');
