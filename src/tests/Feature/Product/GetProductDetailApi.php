@@ -33,13 +33,24 @@ class GetProductDetailApi extends TestCase
       'id' => $this->product->id
     ]));
 
+    $reviewCount = Review::whereProductId($this->product->id)->count();
+    $avgRating = Review::whereProductId($this->product->id)->avg('rating');
+
+    $allCount = Review::where('product_id', $this->product->id)->count();
+    $successCount = Review::where('product_id', $this->product->id)->where('result', 1)->count();
+    $NACount = Review::where('product_id', $this->product->id)->where('result', 0)->count();
+    $successRate = $successCount / ($allCount - $NACount);
+
     $response->assertStatus(200)->assertJson([
       'id' => $this->product->id,
       'name' => $this->product->name,
       'reviews' => [[
         'user_id' => $this->user->id,
         'product_id' => $this->product->id,
-      ]]
+      ]],
+      'reviews_count' => $reviewCount,
+      'avgRating' => $avgRating,
+      'successRate' => $successRate,
     ]);
   }
 }
