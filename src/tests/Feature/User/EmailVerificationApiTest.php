@@ -90,7 +90,10 @@ class EmailVerificationApiTest extends TestCase
     
     $response = $this->json('POST', route('verify'), $data);
   
-    $response->assertStatus(422);
+    $response->assertStatus(422)->assertJson([
+      'errors' => ['verify' => ['The given token was invalid']],
+      'message' => 'The given data was invalid.'
+    ]);
   }
   
   /**
@@ -108,6 +111,9 @@ class EmailVerificationApiTest extends TestCase
     
     $response = $this->json('POST', route('verify'), $data);
   
-    $response->assertStatus(422);
+    $response->assertStatus(422)->assertJson([
+      'errors' => ['verify' => ['The given token was invalid']],
+      'message' => 'The given data was invalid.'
+    ]);
   }
 }

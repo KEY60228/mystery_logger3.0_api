@@ -78,7 +78,7 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'pre_register_id' => $data['pre_register_id'],
             'password' => Hash::make($data['password']),
-            'image_name' => 'default',
+            'image_name' => 'default.jpeg',
         ]);
     }
 
@@ -131,7 +131,10 @@ class RegisterController extends Controller
         || $preUser->status == PreRegister::REGISTERED
         || Carbon::now()->gt($preUser->expiration_time)
       ) {
-        return Response::json([], 422);
+        return Response::json([
+          'errors' => ['verify' => ['The given token was invalid']],
+          'message' => 'The given data was invalid.'
+        ], 422);
       }
 
       $preUser->update(['status' => PreRegister::MAIL_VERIFY]);
@@ -159,7 +162,10 @@ class RegisterController extends Controller
         || $preUser->status != PreRegister::MAIL_VERIFY
         || $preUser->email != $request->json('email')
       ) {
-        return Response::json(['errors' => 'error!'], 422);
+        return Response::json([
+          'errors' => ['pre_register' => ['The given email have not been pre-registered']],
+          'message' => 'The given data was invalid.'
+        ], 422);
       }
 
       event(new Registered($user = $this->create($request->all())));

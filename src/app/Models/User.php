@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'account_id', 'name', 'email', 'password', 'image_name', 'pre_register_id'
+        'account_id', 'name', 'profile', 'email', 'password', 'image_name', 'pre_register_id'
     ];
 
     /**
@@ -41,6 +41,6 @@ class User extends Authenticatable
      * ユーザー情報に紐付くレビューを取得
      */
     public function review() {
-      return $this->hasMany('\App\Models\Review');
+        return $this->hasMany('\App\Models\Review');
     }
 }

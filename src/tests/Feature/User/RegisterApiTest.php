@@ -62,7 +62,9 @@ class RegisterApiTest extends TestCase
 
     $response = $this->json('POST', route('register'), $data);
 
-    $response->assertStatus(422);
+    $response->assertStatus(422)->assertJson([
+      'message' => 'The given data was invalid.'
+    ]);
   }
 
   /**
@@ -87,7 +89,9 @@ class RegisterApiTest extends TestCase
 
     $response = $this->json('POST', route('register'), $data);
 
-    $response->assertStatus(422);
+    $response->assertStatus(422)->assertJson([
+      'message' => 'The given data was invalid.'
+    ]);
   }
 
   /**
@@ -110,6 +114,9 @@ class RegisterApiTest extends TestCase
 
     $response = $this->json('POST', route('register'), $data);
 
-    $response->assertStatus(422);
+    $response->assertStatus(422)->assertJson([
+      'errors' => ['pre_register' => ['The given email have not been pre-registered']],
+      'message' => 'The given data was invalid.'
+    ]);
   }
 }
