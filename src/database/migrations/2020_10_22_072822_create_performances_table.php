@@ -20,6 +20,7 @@ class CreatePerformancesTable extends Migration
             $table->date('date')->nullable();
             $table->time('time')->nullable();
             $table->timestamps();
+            $table->foreign('product_id')->references('id')->on('products');
             $table->foreign('venue_id')->references('id')->on('venues');
         });
     }

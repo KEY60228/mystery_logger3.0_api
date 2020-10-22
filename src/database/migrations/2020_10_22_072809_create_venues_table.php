@@ -16,8 +16,8 @@ class CreateVenuesTable extends Migration
         Schema::create('venues', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('address');
-            $table->string('tel');
+            $table->string('address')->nullable();
+            $table->string('tel')->nullable();
             $table->integer('organizer_id');
             $table->timestamps();
             $table->foreign('organizer_id')->references('id')->on('organizers');
