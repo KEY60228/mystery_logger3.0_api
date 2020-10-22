@@ -16,9 +16,17 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('contents');
-            $table->string('image_name');
+            $table->string('contents')->nullable();
+            $table->string('image_name')->default('no_image.jpeg');
+            $table->integer('limitTime')->nullable();
+            $table->integer('requiredTime')->nullable();
+            $table->integer('minParty')->nullable();
+            $table->integer('maxParty')->nullable();
+            $table->integer('organizer_id');
+            $table->integer('category_id');
             $table->timestamps();
+            $table->foreign('organizer_id')->references('id')->on('organizers');
+            $table->foreign('category_id')->references('id')->on('categories');
         });
     }
 

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class RenameEmailVerificationsToPreregisterTable extends Migration
+class CreateCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,11 @@ class RenameEmailVerificationsToPreregisterTable extends Migration
      */
     public function up()
     {
-        Schema::rename('email_verifications', 'pre_registers');
+        Schema::create('categories', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -23,6 +27,6 @@ class RenameEmailVerificationsToPreregisterTable extends Migration
      */
     public function down()
     {
-        Schema::rename('pre_registers', 'email_verifications');
+        Schema::dropIfExists('categories');
     }
 }

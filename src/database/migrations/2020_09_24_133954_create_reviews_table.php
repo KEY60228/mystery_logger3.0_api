@@ -17,7 +17,7 @@ class CreateReviewsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('user_id');
             $table->integer('product_id');
-            $table->string('contents');
+            $table->string('contents')->nullable();
             $table->integer('result');
             $table->integer('clear_time')->nullable();
             $table->float('rating', 3, 1)->nullable();

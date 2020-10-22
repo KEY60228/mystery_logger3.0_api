@@ -17,12 +17,15 @@ class CreateUsersTable extends Migration
             $table->bigIncrements('id');
             $table->string('account_id');
             $table->string('name');
+            $table->string('profile')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->integer('pre_register_id');
             $table->string('password');
-            $table->string('image_name');
+            $table->string('image_name')->default('default.jpeg');
             $table->rememberToken();
             $table->timestamps();
+            $table->foreign('pre_register_id')->references('id')->on('pre_registers');
         });
     }
 
