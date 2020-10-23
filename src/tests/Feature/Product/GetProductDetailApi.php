@@ -8,6 +8,10 @@ use Tests\TestCase;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Review;
+use App\Models\Performance;
+use App\Models\Category;
+use App\Models\Venue;
+use App\Models\Organizer;
 
 class GetProductDetailApi extends TestCase
 {
@@ -16,8 +20,20 @@ class GetProductDetailApi extends TestCase
   public function setUp(): void
   {
     parent::setUp();
-    $this->product = factory(Product::class)->create();
     $this->user = factory(User::class)->create();
+    $this->organizer = factory(Organizer::class)->create();
+    $this->category = factory(Category::class)->create();
+    $this->product = factory(Product::class)->create([
+      'organizer_id' => $this->organizer->id,
+      'category_id' => $this->category->id,
+    ]);
+    $this->venue = factory(Venue::class)->create([
+      'organizer_id' => $this->organizer->id,
+    ]);
+    $this->performance = factory(Performance::class)->create([
+      'product_id' => $this->product->id,
+      'venue_id' => $this->venue->id,
+    ]);
     $this->review = factory(Review::class, 3)->create([
       'user_id' => $this->user->id,
       'product_id' => $this->product->id,
@@ -37,9 +53,14 @@ class GetProductDetailApi extends TestCase
     $avgRating = Review::whereProductId($this->product->id)->avg('rating');
 
     $allCount = Review::where('product_id', $this->product->id)->count();
-    $successCount = Review::where('product_id', $this->product->id)->where('result', 1)->count();
     $NACount = Review::where('product_id', $this->product->id)->where('result', 0)->count();
-    $successRate = $successCount / ($allCount - $NACount);
+    if ($allCount === 0 || $NACount === $allCount) {
+      $successCount = 0;
+      $successRate = null;
+    } else {
+      $successCount = Review::where('product_id', $this->product->id)->where('result', 1)->count();
+      $successRate = $successCount / ($allCount - $NACount);
+    }
 
     $response->assertStatus(200)->assertJson([
       'id' => $this->product->id,
@@ -47,10 +68,25 @@ class GetProductDetailApi extends TestCase
       'reviews' => [[
         'user_id' => $this->user->id,
         'product_id' => $this->product->id,
+        'user' => [
+          'name' => $this->user->name,
+        ]
       ]],
-      'reviews_count' => $reviewCount,
-      'avgRating' => $avgRating,
-      'successRate' => $successRate,
+      'category' => [
+        'name' => $this->category->name,
+      ],
+      'reviews_count' => (Integer)$reviewCount,
+      'avgRating' => round($avgRating, 2),
+      'successRate' => round($successRate, 2),
+      'performances' => [[
+        'product_id' => $this->performance->product_id,
+        'venue' => [
+          'name' => $this->venue->name,
+        ]
+      ]],
+      'organizer' => [
+        'name' => $this->organizer->name,
+      ]
     ]);
   }
 }

@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Review;
+use App\Models\Category;
 
 class GetAllProductsApiTest extends TestCase
 {
@@ -22,6 +23,7 @@ class GetAllProductsApiTest extends TestCase
       'user_id' => $this->user->id,
       'product_id' => $this->product->id,
     ]);
+    $this->category = factory(Category::class)->create();
   }
 
   /**
@@ -35,20 +37,24 @@ class GetAllProductsApiTest extends TestCase
     $avgRating = Review::whereProductId($this->product->id)->avg('rating');
 
     $allCount = Review::where('product_id', $this->product->id)->count();
-    $successCount = Review::where('product_id', $this->product->id)->where('result', 1)->count();
     $NACount = Review::where('product_id', $this->product->id)->where('result', 0)->count();
-    $successRate = $successCount / ($allCount - $NACount);
+    if ($allCount === 0 || $NACount === $allCount) {
+      $successCount = 0;
+      $successRate = null;
+    } else {
+      $successCount = Review::where('product_id', $this->product->id)->where('result', 1)->count();
+      $successRate = $successCount / ($allCount - $NACount);
+    }
 
     $response->assertStatus(200)->assertJson([[
       'id' => $this->product->id,
       'name' => $this->product->name,
-      'reviews' => [[
-        'user_id' => $this->user->id,
-        'product_id' => $this->product->id,
-      ]],
-      'reviews_count' => $reviewCount,
-      'avgRating' => $avgRating,
-      'successRate' => $successRate,
+      'reviews_count' => (Integer)$reviewCount,
+      'avgRating' => round($avgRating, 2),
+      'successRate' => round($successRate, 2),
+      'category' =>  [
+        'name' => $this->category->name,
+      ],
     ]]);
   }
 }

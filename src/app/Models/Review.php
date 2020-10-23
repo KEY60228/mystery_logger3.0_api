@@ -10,7 +10,11 @@ class Review extends Model
   const SUCCESS = 1;
   const FAILED = 2;
 
-  public $guarded = [];
+  protected $guarded = [];
+
+  protected $casts = [
+    'rating' => 'float',
+  ];
 
   /**
    * レビューに紐付くユーザー情報

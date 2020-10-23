@@ -10,29 +10,30 @@ use App\Models\Review;
 class ProductController extends Controller
 {
   public function index(Request $request) {
-    $products = Product::with(['reviews', 'reviews.user'])->withCount('reviews')->get();
+    $products = Product::with(['category'])->withCount('reviews')->get();
 
     foreach ($products as $product) {
+      // 平均レートの取得
       $avgRating = $product->reviews->avg('rating');
       if ($avgRating === 0 || $avgRating === null) {
-        $product->avgRating = '-';
+        $product->avgRating = null;
       } else {
-        $product->avgRating = $avgRating;
+        $product->avgRating = round($avgRating, 2);
       }
 
+      // 成功数、成功率の取得
       $allCount = Review::where('product_id', $product->id)->count();
-      if ($allCount === 0) {
-        $product->reviewCount = 0;
+      $NACount = Review::where('product_id', $product->id)->where('result', 0)->count();
+
+      if ($allCount === 0 || $NACount === $allCount) {
         $product->successCount = 0;
-        $product->successRate = '-';
+        $product->successRate = null;
       } else {
         $successCount = Review::where('product_id', $product->id)->where('result', 1)->count();
-        $NACount = Review::where('product_id', $product->id)->where('result', 0)->count();
-        $successRate = $successCount / ($allCount - $NACount);
+        $successRate = $successCount / ($allCount - $NACount);          
 
-        $product->reviewCount = $allCount;
         $product->successCount = $successCount;
-        $product->successRate = $successRate;
+        $product->successRate = round($successRate, 2);
       }
     }
 
@@ -40,30 +41,30 @@ class ProductController extends Controller
   }
 
   public function show(Request $request, $id) {
-    $product = Product::whereId($id)->with(['reviews', 'reviews.user'])->withCount('reviews')->first();
+    $product = Product::whereId($id)->with(['reviews', 'reviews.user', 'category', 'performances', 'performances.venue', 'organizer'])->withCount('reviews')->first();
 
+    // 平均レートの取得
     $avgRating = $product->reviews->avg('rating');
     if ($avgRating === 0 || $avgRating === null) {
-      $product->avgRating = '-';
+      $product->avgRating = null;
     } else {
-      $product->avgRating = $avgRating;
+      $product->avgRating = round($avgRating, 2);
     }
 
+    // 成功数、成功率の取得
     $allCount = Review::where('product_id', $id)->count();
-    if ($allCount === 0) {
-      $product->reviewCount = 0;
+    $NACount = Review::where('product_id', $id)->where('result', 0)->count();
+
+    if ($allCount === 0 || $NACount === $allCount) {
       $product->successCount = 0;
-      $product->successRate = '-';
+      $product->successRate = null;
     } else {
       $successCount = Review::where('product_id', $id)->where('result', 1)->count();
-      $NACount = Review::where('product_id', $id)->where('result', 0)->count();
       $successRate = $successCount / ($allCount - $NACount);
 
-      $product->reviewCount = $allCount;
       $product->successCount = $successCount;
-      $product->successRate = $successRate;
+      $product->successRate = round($successRate, 2);
     }
-    
 
     return Response::json($product, 200);
   }
