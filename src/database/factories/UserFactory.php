@@ -21,6 +21,7 @@ $factory->define(User::class, function (Faker $faker) {
     return [
         'account_id' => Str::random(10),
         'name' => $faker->name,
+        'profile' => $faker->text,
         'email' => $faker->unique()->safeEmail,
         'email_verified_at' => now(),
         'pre_register_id' => Str::random(10),

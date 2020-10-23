@@ -40,7 +40,7 @@ class User extends Authenticatable
     /**
      * ユーザー情報に紐付くレビューを取得
      */
-    public function review() {
+    public function reviews() {
         return $this->hasMany('\App\Models\Review');
     }
 }
