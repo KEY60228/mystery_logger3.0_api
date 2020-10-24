@@ -76,8 +76,8 @@ class GetProductDetailApi extends TestCase
         'name' => $this->category->name,
       ],
       'reviews_count' => (Integer)$reviewCount,
-      'avgRating' => round($avgRating, 2),
-      'successRate' => round($successRate, 2),
+      'avg_rating' => round($avgRating, 2),
+      'success_rate' => round($successRate, 2),
       'performances' => [[
         'product_id' => $this->performance->product_id,
         'venue' => [

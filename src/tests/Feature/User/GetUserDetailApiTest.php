@@ -45,6 +45,8 @@ class getUserDetailApiTest extends TestCase
         'user_id' => $this->user->id,
         'product' => [
           'id' => $this->product->id,
+          'avg_rating' => $this->product->avg_rating,
+          'success_count' => $this->product->success_count,
           'category' => [
             'id' => $this->category->id,
           ]
