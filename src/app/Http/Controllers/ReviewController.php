@@ -29,7 +29,7 @@ class ReviewController extends Controller
   }
 
   public function show(Request $request, $id) {
-    $review = Review::whereId($id)->with(['user', 'product'])->first();
+    $review = Review::whereId($id)->with(['user', 'product', 'product.category', 'product.organizer', 'product.performances.venue'])->first();
 
     return Response::json($review, 200);
   }

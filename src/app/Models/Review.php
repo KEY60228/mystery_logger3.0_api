@@ -16,16 +16,10 @@ class Review extends Model
     'rating' => 'float',
   ];
 
-  /**
-   * レビューに紐付くユーザー情報
-   */
   public function user() {
     return $this->belongsTo('\App\Models\User');
   }
 
-  /**
-   * レビューに紐付く作品情報
-   */
   public function product() {
     return $this->belongsTo('\App\Models\Product');
   }
