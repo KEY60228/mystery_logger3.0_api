@@ -45,4 +45,10 @@ class ReviewController extends Controller
 
     return Response::json([], 200);
   }
+
+  public function delete(Request $request, $id) {
+    Review::find($id)->delete();
+
+    return Response::json([], 204);
+  }
 }

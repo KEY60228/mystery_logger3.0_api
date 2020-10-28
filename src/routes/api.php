@@ -46,6 +46,9 @@ Route::get('/reviews/{reviewId}', 'ReviewController@show')->name('review.show');
 // レビュー更新
 Route::put('/reviews/{reviewId}', 'ReviewController@update')->name('review.update');
 
+// レビュー削除
+Route::delete('/reviews/{reviewId}', 'ReviewController@delete')->name('review.delete');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
