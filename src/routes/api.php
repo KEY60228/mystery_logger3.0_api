@@ -52,6 +52,9 @@ Route::delete('/reviews/{reviewId}', 'ReviewController@delete')->name('review.de
 // タイムライン取得
 Route::get('/reviews', 'ReviewController@index')->name('review.timeline');
 
+// フォロー
+Route::put('/follow', 'FollowController@follow')->name('follow');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
