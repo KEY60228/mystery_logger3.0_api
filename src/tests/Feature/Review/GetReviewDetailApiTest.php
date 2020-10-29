@@ -11,6 +11,7 @@ use App\Models\Review;
 use App\Models\Category;
 use App\Models\Performance; 
 use App\Models\Organizer;
+use App\Models\Venue;
 
 class GetReviewDetailApiTest extends TestCase
 {
@@ -60,10 +61,9 @@ class GetReviewDetailApiTest extends TestCase
         'category' => [
           'id' => $this->category->id,
         ],
-        'performance_id' => $this->performance->id,
-        'performance' => [
+        'performances' => [[
           'venue_id' => $this->venue->id,
-        ]
+        ]]
       ],
     ]);
   }
