@@ -177,6 +177,7 @@ class RegisterController extends Controller
 
       // ToDo: Cookieの付与
       return Response::json([
+        'id' => $user->id,
         'account_id' => $user->account_id,
         'name' => $user->name,
       ], 201);

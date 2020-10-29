@@ -43,6 +43,7 @@ class LoginController extends Controller
     public function authenticated(Request $request, $user)
     {
       return Response::json([
+        'id' => $user->id,
         'account_id' => $user->account_id,
         'name' => $user->name,
       ], 200);
