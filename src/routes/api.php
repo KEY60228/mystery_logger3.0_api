@@ -49,6 +49,9 @@ Route::put('/reviews/{reviewId}', 'ReviewController@update')->name('review.updat
 // レビュー削除
 Route::delete('/reviews/{reviewId}', 'ReviewController@delete')->name('review.delete');
 
+// タイムライン取得
+Route::get('/reviews', 'ReviewController@index')->name('review.timeline');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

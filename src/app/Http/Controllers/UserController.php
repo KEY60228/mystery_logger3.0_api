@@ -11,7 +11,7 @@ use App\Models\Review;
 class UserController extends Controller
 {
   public function show(Request $request, $id) {
-    $user = User::whereAccountId($id)->with(['reviews', 'reviews.product', 'reviews.product.category'])->withCount(['reviews'])->first();
+    $user = User::whereAccountId($id)->with(['reviews', 'reviews.product', 'reviews.product.category'])->first();
 
     if (is_null($user)) {
       // エラーハンドリング
@@ -20,7 +20,7 @@ class UserController extends Controller
 
     // TODO: アクセサに統一する
     foreach ($user->reviews as $review) {
-      $product = Product::whereId($review['product']->id)->withCount(['reviews'])->first();
+      $product = Product::whereId($review['product']->id)->first();
       $review['product']->reviews_count = $product->reviews_count;
     }
 

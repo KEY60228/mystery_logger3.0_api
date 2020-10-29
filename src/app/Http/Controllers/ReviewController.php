@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Response;
 use App\Http\Requests\PostReviewRequest;
 use App\Http\Requests\UpdateReviewRequest;
 use App\Models\Review;
+use App\Models\User;
 
 class ReviewController extends Controller
 {
@@ -50,5 +51,13 @@ class ReviewController extends Controller
     Review::find($id)->delete();
 
     return Response::json([], 204);
+  }
+
+  public function index(Request $request) {
+    $user = User::find($request->user_id);
+
+    $reviews = Review::whereUserId($user->id)->with(['product', 'user'])->orderBy('created_at', 'desc')->get();
+
+    return Response::json($reviews, 200);
   }
 }

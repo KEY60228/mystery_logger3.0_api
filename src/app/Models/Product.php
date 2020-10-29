@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
   protected $guarded = [];
-  protected $appends = ['avg_rating', 'success_count', 'na_count', 'success_rate'];
+  protected $appends = ['avg_rating', 'success_count', 'na_count', 'success_rate', 'reviews_count'];
 
   public function reviews() {
     return $this->hasMany('\App\Models\Review');
@@ -48,5 +48,9 @@ class Product extends Model
     } else {
       return round(($this->success_count / ($this->reviews()->count() - $this->na_count)), 2);
     }
+  }
+
+  public function getReviewsCountAttribute() {
+    return $this->reviews()->count();
   }
 }
