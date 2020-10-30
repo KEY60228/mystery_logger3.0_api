@@ -55,6 +55,9 @@ Route::get('/reviews', 'ReviewController@index')->name('review.timeline');
 // フォロー
 Route::put('/follow', 'FollowController@follow')->name('follow');
 
+// アンフォロー
+Route::delete('/unfollow', 'FollowController@unfollow')->name('unfollow');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

@@ -17,4 +17,10 @@ class FollowController extends Controller
 
         return Response::json([], 200);
     }
+
+    public function unfollow(Request $request) {
+        Follow::whereFollowingId($request->following_id)->delete();
+
+        return Response::json([], 204);
+    }
 }
