@@ -42,15 +42,17 @@ class LoginController extends Controller
 
     public function authenticated(Request $request, $user)
     {
-      return Response::json([
-        'id' => $user->id,
-        'account_id' => $user->account_id,
-        'name' => $user->name,
-      ], 200);
+        return Response::json([
+            'id' => $user->id,
+            'account_id' => $user->account_id,
+            'name' => $user->name,
+            'follows_id' => $user->follows_id,
+            'followers_id' => $user->followers_id,
+        ], 200);
     }
 
     protected function loggedOut(Request $request)
     {
-      return Response::json([], 200);
+        return Response::json([], 200);
     }
 }

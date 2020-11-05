@@ -45,10 +45,26 @@ class User extends Authenticatable
     }
 
     public function follows() {
-        return $this->belongsToMany(self::class, "follows", "following_id", "followed_id");
+        return $this->belongsToMany(self::class, "\App\Models\Follow", "following_id", "followed_id");
     }
 
     public function followers() {
-        return $this->belongsToMany(self::class, "follows", "followed_id", "following_id");
+        return $this->belongsToMany(self::class, "\App\Models\Follow", "followed_id", "following_id");
+    }
+
+    public function getFollowsIdAttribute() {
+        $follows_id = [];
+        foreach ($this->follows as $follow) {
+            $follows_id[] = $follow->id;
+        }
+        return $follows_id;
+    }
+
+    public function getFollowersIdAttribute() {
+        $followers_id = [];
+        foreach ($this->followers as $follower) {
+            $followers_id[] = $follower->id;
+        }
+        return $followers_id;
     }
 }
