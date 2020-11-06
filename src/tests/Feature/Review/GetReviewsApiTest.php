@@ -17,8 +17,9 @@ class GetReviewsApiTest extends TestCase
     {
         parent::setUp();
         $this->user = factory(User::class)->create();
+        $this->follows = factory(User::class)->create();
         $this->product = factory(Product::class)->create();
-        $this->reviews = factory(Review::class, 4)->create([
+        $this->reviews = factory(Review::class)->create([
             'user_id' => $this->user->id,
             'product_id' => $this->product->id,
         ]);
