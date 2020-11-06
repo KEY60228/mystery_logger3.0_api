@@ -37,9 +37,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * ユーザー情報に紐付くレビューを取得
-     */
+    protected $appends = ['reviews_count', 'success_rate'];
+    
     public function reviews() {
         return $this->hasMany('\App\Models\Review');
     }
@@ -66,5 +65,26 @@ class User extends Authenticatable
             $followers_id[] = $follower->id;
         }
         return $followers_id;
+    }
+
+    public function getReviewsCountAttribute() {
+        return $this->reviews()->count();
+    }
+
+    public function getSuccessRateAttribute() {
+        $reviews = $this->reviews()->count();
+        $na = $this->reviews()->whereResult(0)->count();
+        $success = $this->reviews()->whereResult(1)->count();
+        $fail = $this->reviews()->whereResult(2)->count();
+
+        if ($reviews === $na) {
+            return null;
+        }
+
+        if ($success === 0) {
+            return 0;
+        }
+
+        return $success / $reviews;
     }
 }
