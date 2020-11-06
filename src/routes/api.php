@@ -58,6 +58,9 @@ Route::put('/follow', 'FollowController@follow')->name('follow');
 // アンフォロー
 Route::delete('/unfollow', 'FollowController@unfollow')->name('unfollow');
 
+// クッキーログイン & ユーザー情報更新
+Route::get('/currentuser', 'UserController@currentuser')->name('currentUser');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
