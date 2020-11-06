@@ -61,6 +61,9 @@ Route::delete('/unfollow', 'FollowController@unfollow')->name('unfollow');
 // クッキーログイン & ユーザー情報更新
 Route::get('/currentuser', 'UserController@currentuser')->name('currentUser');
 
+// 「行きたい」登録
+Route::put('/wanna', 'WannaController@wanna')->name('wanna');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
