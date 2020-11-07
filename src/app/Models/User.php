@@ -87,4 +87,12 @@ class User extends Authenticatable
 
         return $success / $reviews;
     }
+
+    public function getDoneIdAttribute() {
+        $done_id = [];
+        foreach ($this->reviews as $review) {
+            $done_id[] = $review->product_id;
+        }
+        return $done_id;
+    }
 }

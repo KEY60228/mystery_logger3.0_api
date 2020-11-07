@@ -35,6 +35,7 @@ class UserController extends Controller
             'name' => $user->name,
             'follows_id' => $user->follows_id,
             'followers_id' => $user->followers_id,
+            'done_id' => $user->done_id,
         ], 200);
     }
 }
