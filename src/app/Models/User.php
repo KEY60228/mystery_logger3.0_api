@@ -51,6 +51,10 @@ class User extends Authenticatable
         return $this->belongsToMany(self::class, "\App\Models\Follow", "followed_id", "following_id");
     }
 
+    public function wannas() {
+        return $this->hasMany('\App\Models\Wanna');
+    }
+
     public function getFollowsIdAttribute() {
         $follows_id = [];
         foreach ($this->follows as $follow) {
@@ -94,5 +98,13 @@ class User extends Authenticatable
             $done_id[] = $review->product_id;
         }
         return $done_id;
+    }
+
+    public function getWannaIdAttribute() {
+        $wanna_id = [];
+        foreach ($this->wannas as $wanna) {
+            $wanna_id[] = $wanna->product_id;
+        }
+        return $wanna_id;
     }
 }
