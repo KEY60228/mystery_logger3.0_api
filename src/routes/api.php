@@ -64,6 +64,9 @@ Route::get('/currentuser', 'UserController@currentuser')->name('currentUser');
 // 「行きたい」登録
 Route::put('/wanna', 'WannaController@wanna')->name('wanna');
 
+// 「行きたい」削除
+Route::delete('/wanna', 'WannaController@unwanna')->name('unwanna');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
