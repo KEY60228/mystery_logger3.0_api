@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PostReviewRequest extends FormRequest
 {
@@ -26,13 +27,20 @@ class PostReviewRequest extends FormRequest
         $today = date('Y-m-d');
 
         return [
-          'user_id' => ['required', 'integer', 'exists:App\Models\User,id'],
-          'product_id' => ['required', 'integer', 'exists:App\Models\Product,id'],
-          'contents' => ['required', 'max:255', 'string'],
-          'result' => ['required', 'between:0,2', 'integer'],
-          'clear_time' => ['integer', 'nullable'],
-          'rating' => ['between:1,5', 'nullable'],
-          'joined_at' => ['date', 'before_or_equal:' . $today, 'nullable'],
+            'user_id' => ['required', 'integer', 'exists:App\Models\User,id'],
+            'product_id' => [
+                'required',
+                'integer',
+                'exists:App\Models\Product,id',
+                Rule::unique('reviews')->ignore($this->input('id'))->where(function($query) {
+                    $query->where('user_id', $this->input('user_id'));
+                }),
+            ],
+            'contents' => ['max:255', 'string'],
+            'result' => ['required', 'between:0,2', 'integer'],
+            'clear_time' => ['integer', 'nullable'],
+            'rating' => ['between:1,5', 'nullable'],
+            'joined_at' => ['date', 'before_or_equal:' . $today, 'nullable'],
         ];
     }
 }
