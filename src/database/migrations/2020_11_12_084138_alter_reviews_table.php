@@ -14,7 +14,8 @@ class AlterReviewsTable extends Migration
     public function up()
     {
         Schema::table('reviews', function (Blueprint $table) {
-            $table->unique(['user_id', 'product_id'], 'unique_user_id_product_id');
+            $table->boolean('exist')->nullable()->generatedAs('case when deleted_at is null then 1 else null end');
+            $table->unique(['user_id', 'product_id', 'exist'], 'unique_user_id_product_id');
         });
     }
 
@@ -26,6 +27,7 @@ class AlterReviewsTable extends Migration
     public function down()
     {
         Schema::table('reviews', function (Blueprint $table) {
+            $table->dropColumn('exist');
             $table->dropUnique('unique_user_id_product_id');
         });
     }

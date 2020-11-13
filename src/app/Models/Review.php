@@ -7,25 +7,25 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Review extends Model
 {
-  use SoftDeletes;
+    use SoftDeletes;
 
-  const NO_ANSWER = 0;
-  const SUCCESS = 1;
-  const FAILED = 2;
+    const NO_ANSWER = 0;
+    const SUCCESS = 1;
+    const FAILED = 2;
 
-  protected $guarded = [];
+    protected $guarded = [];
 
-  protected $casts = [
-    'rating' => 'float',
-  ];
+    protected $casts = [
+        'rating' => 'float',
+    ];
 
-  protected $dates = ['deleted_at'];
+    protected $dates = ['deleted_at'];
 
-  public function user() {
-    return $this->belongsTo('\App\Models\User');
-  }
+    public function user() {
+        return $this->belongsTo('\App\Models\User');
+    }
 
-  public function product() {
-    return $this->belongsTo('\App\Models\Product');
-  }
+    public function product() {
+        return $this->belongsTo('\App\Models\Product');
+    }
 }

@@ -33,7 +33,7 @@ class PostReviewRequest extends FormRequest
                 'integer',
                 'exists:App\Models\Product,id',
                 Rule::unique('reviews')->ignore($this->input('id'))->where(function($query) {
-                    $query->where('user_id', $this->input('user_id'));
+                    $query->where('user_id', $this->input('user_id'))->whereNull('deleted_at');
                 }),
             ],
             'contents' => ['max:255', 'string'],
