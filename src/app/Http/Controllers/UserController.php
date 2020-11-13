@@ -12,7 +12,7 @@ use App\Models\Review;
 class UserController extends Controller
 {
     public function show(Request $request, $id) {
-        $user = User::whereAccountId($id)->with(['reviews', 'reviews.product', 'reviews.product.category'])->withCount(['follows', 'followers'])->first();
+        $user = User::whereAccountId($id)->with(['reviews', 'reviews.product', 'reviews.product.category', 'wannas.product'])->withCount(['follows', 'followers', 'wannas'])->first();
 
         if (is_null($user)) {
             // エラーハンドリング
