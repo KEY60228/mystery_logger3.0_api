@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Review;
+use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -38,5 +39,21 @@ class UserController extends Controller
             'done_id' => $user->done_id,
             'wanna_id' => $user->wanna_id,
         ], 200);
+    }
+
+    public function update(UpdateUserRequest $request, $id) {
+        $user = Auth::user();
+
+        if (!$user) {
+            return Response::json([], 422);
+        }
+
+        $user->update([
+            'name' => $request->name,
+            'account_id' => $request->account_id,
+            'profile' => $request->profile,
+        ]);
+
+        return Response::json([], 200);
     }
 }

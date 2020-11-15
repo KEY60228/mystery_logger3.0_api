@@ -67,6 +67,9 @@ Route::put('/wanna', 'WannaController@wanna')->name('wanna');
 // 「行きたい」削除
 Route::delete('/wanna', 'WannaController@unwanna')->name('unwanna');
 
+// ユーザー情報更新
+Route::put('/users/{userId}', 'UserController@update')->name('user.update');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
