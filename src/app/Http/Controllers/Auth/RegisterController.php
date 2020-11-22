@@ -90,30 +90,30 @@ class RegisterController extends Controller
      */
     public function preregister(Request $request)
     {
-      $emailValidator = [
-        'email' => ['required', 'string', 'email', 'unique:users'],
-      ];
+        $emailValidator = [
+            'email' => ['required', 'string', 'email', 'unique:users'],
+        ];
 
-      $this->validate($request, $emailValidator);
+        $this->validate($request, $emailValidator);
 
-      if ($preRegister = PreRegister::whereEmail($request->json('email'))->first()) {
-        $preRegister->update([
-          'token' => Str::random(250),
-          'expiration_time' => Carbon::now()->addHours(1),
-        ]);
-      } else {
-        $preRegister = PreRegister::create([
-          'email' => $request->json('email'),
-          'token' => Str::random(250),
-          'status' => PreRegister::SEND_MAIL,
-          'expiration_time' => Carbon::now()->addHours(1),
-        ]);
-      }
+        if ($preRegister = PreRegister::whereEmail($request->json('email'))->first()) {
+            $preRegister->update([
+                'token' => Str::random(250),
+                'expiration_time' => Carbon::now()->addHours(1),
+            ]);
+        } else {
+            $preRegister = PreRegister::create([
+                'email' => $request->json('email'),
+                'token' => Str::random(250),
+                'status' => PreRegister::SEND_MAIL,
+                'expiration_time' => Carbon::now()->addHours(1),
+            ]);
+        }
 
-      $mail = new EmailVerification($preRegister);
-      Mail::to($preRegister->email)->send($mail);
+        $mail = new EmailVerification($preRegister);
+        Mail::to($preRegister->email)->send($mail);
 
-      return Response::json([], 201);
+        return Response::json([], 201);
     }
 
     /**
@@ -124,25 +124,25 @@ class RegisterController extends Controller
      */
     public function verify(Request $request)
     {
-      $preUser = PreRegister::whereToken($request->json('token'))->first();
+        $preUser = PreRegister::whereToken($request->json('token'))->first();
 
-      if (
-        is_null($preUser)
-        || $preUser->status == PreRegister::REGISTERED
-        || Carbon::now()->gt($preUser->expiration_time)
-      ) {
+        if (
+            is_null($preUser)
+            || $preUser->status == PreRegister::REGISTERED
+            || Carbon::now()->gt($preUser->expiration_time)
+        ) {
+            return Response::json([
+                'errors' => ['verify' => ['The given token was invalid']],
+                'message' => 'The given data was invalid.'
+            ], 422);
+        }
+
+        $preUser->update(['status' => PreRegister::MAIL_VERIFY]);
+
         return Response::json([
-          'errors' => ['verify' => ['The given token was invalid']],
-          'message' => 'The given data was invalid.'
-        ], 422);
-      }
-
-      $preUser->update(['status' => PreRegister::MAIL_VERIFY]);
-
-      return Response::json([
-        'email' => $preUser->email,
-        'pre_register_id' => $preUser->id,
-      ], 200);
+            'email' => $preUser->email,
+            'pre_register_id' => $preUser->id,
+        ], 200);
     }
 
     /**
@@ -153,33 +153,37 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-      $this->validator($request->all())->validate();
+        $this->validator($request->all())->validate();
 
-      $preUser = PreRegister::find($request->json('pre_register_id'));
+        $preUser = PreRegister::find($request->json('pre_register_id'));
 
-      if (
-        is_null($preUser)
-        || $preUser->status != PreRegister::MAIL_VERIFY
-        || $preUser->email != $request->json('email')
-      ) {
+        if (
+            is_null($preUser)
+            || $preUser->status != PreRegister::MAIL_VERIFY
+            || $preUser->email != $request->json('email')
+        ) {
+            return Response::json([
+                'errors' => ['pre_register' => ['The given email have not been pre-registered']],
+                'message' => 'The given data was invalid.'
+            ], 422);
+        }
+
+        event(new Registered($user = $this->create($request->all())));
+        $preUser->update([
+            'status' => PreRegister::REGISTERED,
+        ]);
+
+        $this->guard()->login($user);
+
+        // ToDo: Cookieの付与
         return Response::json([
-          'errors' => ['pre_register' => ['The given email have not been pre-registered']],
-          'message' => 'The given data was invalid.'
-        ], 422);
-      }
-
-      event(new Registered($user = $this->create($request->all())));
-      $preUser->update([
-        'status' => PreRegister::REGISTERED,
-      ]);
-
-      $this->guard()->login($user);
-
-      // ToDo: Cookieの付与
-      return Response::json([
-        'id' => $user->id,
-        'account_id' => $user->account_id,
-        'name' => $user->name,
-      ], 201);
+            'id' => $user->id,
+            'account_id' => $user->account_id,
+            'name' => $user->name,
+            'follows_id' => $user->follows_id,
+            'followers_id' => $user->followers_id,
+            'done_id' => $user->done_id,
+            'wanna_id' => $user->wanna_id,
+        ], 201);
     }
 }
