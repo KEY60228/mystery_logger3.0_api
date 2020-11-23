@@ -10,12 +10,24 @@ use App\Models\Review;
 class ProductController extends Controller
 {
     public function index(Request $request) {
-        $products = Product::with(['category', 'performances', 'performances.venue', 'organizer'])->get();
+        $products = Product::with([
+            'category',
+            'performances',
+            'performances.venue',
+            'organizer'
+        ])->withCount('wannas')->get();
         return Response::json($products, 200);
     }
 
     public function show(Request $request, $id) {
-        $product = Product::whereId($id)->with(['reviews', 'reviews.user', 'category', 'performances', 'performances.venue', 'organizer'])->first();
+        $product = Product::whereId($id)->with([
+            'reviews',
+            'reviews.user',
+            'category',
+            'performances',
+            'performances.venue',
+            'organizer'
+        ])->withCount('wannas')->first();
         return Response::json($product, 200);
     }
 }
