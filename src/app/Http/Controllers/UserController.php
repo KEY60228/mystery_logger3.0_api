@@ -13,7 +13,18 @@ use App\Http\Requests\UpdateUserRequest;
 class UserController extends Controller
 {
     public function show(Request $request, $id) {
-        $user = User::whereAccountId($id)->with(['reviews', 'reviews.product', 'reviews.product.category', 'wannas.product'])->withCount(['follows', 'followers', 'wannas'])->first();
+        $user = User::whereAccountId($id)->with([
+            'reviews',
+            'reviews.product',
+            'reviews.product.category',
+            'wannas.product',
+            'follows',
+            'followers',
+        ])->withCount([
+            'follows',
+            'followers',
+            'wannas'
+        ])->first();
 
         if (is_null($user)) {
             // エラーハンドリング
