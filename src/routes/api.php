@@ -70,6 +70,9 @@ Route::delete('/wanna', 'WannaController@unwanna')->name('unwanna');
 // ユーザー情報更新
 Route::put('/users/{userId}', 'UserController@update')->name('user.update');
 
+// コメント投稿
+Route::post('/reviews/comments', 'CommentController@post')->name('comment.post');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
