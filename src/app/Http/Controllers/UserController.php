@@ -20,6 +20,10 @@ class UserController extends Controller
             'wannas.product',
             'follows',
             'followers',
+            'review_likes',
+            'review_likes.review',
+            'review_likes.review.user',
+            'review_likes.review.product',
         ])->withCount([
             'follows',
             'followers',

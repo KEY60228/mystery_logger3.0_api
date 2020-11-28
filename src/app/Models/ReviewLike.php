@@ -10,10 +10,10 @@ class ReviewLike extends Model
     protected $appends = [];
 
     public function user() {
-        $this->belongsTo('\App\Models\User');
+        return $this->belongsTo('\App\Models\User');
     }
 
     public function review() {
-        $this->belongsTo('\App\Models\Review');
+        return $this->belongsTo('\App\Models\Review');
     }
 }
