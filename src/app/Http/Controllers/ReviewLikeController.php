@@ -22,4 +22,15 @@ class ReviewLikeController extends Controller
 
         return Response::json([], 201);
     }
+
+    public function unlike(Request $request) {
+        $unlike = ReviewLike::whereUserId($request->user_id)->whereReviewId($request->review_id)->first();
+
+        if (!$unlike) {
+            return Response::json([], 422);
+        }
+
+        $unlike->delete();
+        return Response::json([], 204);
+    }
 }

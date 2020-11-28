@@ -76,6 +76,9 @@ Route::post('/reviews/comments', 'CommentController@post')->name('comment.post')
 // レビューへのLike
 Route::put('/likes/reviews', 'ReviewLikeController@like')->name('like.review');
 
+// レビューへのLike取り消し
+Route::delete('/likes/reviews', 'ReviewLikeController@unlike')->name('unlike.review');
+
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
