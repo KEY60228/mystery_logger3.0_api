@@ -37,7 +37,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    protected $appends = ['reviews_count', 'success_rate'];
+    protected $appends = ['reviews_count', 'success_rate', 'like_reviews_id'];
     
     public function reviews() {
         return $this->hasMany('\App\Models\Review');
@@ -53,6 +53,14 @@ class User extends Authenticatable
 
     public function wannas() {
         return $this->hasMany('\App\Models\Wanna');
+    }
+
+    public function comments() {
+        return $this->hasMany('\App\Models\Comment');
+    }
+
+    public function review_likes() {
+        return $this->hasMany('\App\Models\ReviewLike');
     }
 
     public function getFollowsIdAttribute() {
@@ -106,5 +114,13 @@ class User extends Authenticatable
             $wanna_id[] = $wanna->product_id;
         }
         return $wanna_id;
+    }
+
+    public function getLikeReviewsIdAttribute() {
+        $review_likes_id = [];
+        foreach ($this->review_likes as $review_like) {
+            $review_likes_id[] = $review_like->review_id;
+        }
+        return $review_likes_id;
     }
 }

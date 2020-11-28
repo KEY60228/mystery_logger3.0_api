@@ -49,6 +49,7 @@ class UserController extends Controller
             'followers_id' => $user->followers_id,
             'done_id' => $user->done_id,
             'wanna_id' => $user->wanna_id,
+            'like_reviews_id' => $user->like_reviews_id,
         ], 200);
     }
 
