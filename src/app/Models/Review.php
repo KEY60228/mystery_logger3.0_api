@@ -19,6 +19,8 @@ class Review extends Model
         'rating' => 'float',
     ];
 
+    protected $appends = ['comments_count'];
+
     protected $dates = ['deleted_at'];
 
     public function user() {
@@ -27,5 +29,13 @@ class Review extends Model
 
     public function product() {
         return $this->belongsTo('\App\Models\Product');
+    }
+
+    public function comments() {
+        return $this->hasMany('\App\Models\Comment');
+    }
+    
+    public function getCommentsCountAttribute() {
+        return $this->comments()->count();
     }
 }
