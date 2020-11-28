@@ -19,7 +19,7 @@ class Review extends Model
         'rating' => 'float',
     ];
 
-    protected $appends = ['comments_count'];
+    protected $appends = ['comments_count', 'review_likes_count'];
 
     protected $dates = ['deleted_at'];
 
@@ -34,8 +34,16 @@ class Review extends Model
     public function comments() {
         return $this->hasMany('\App\Models\Comment');
     }
-    
+
+    public function review_likes() {
+        return $this->hasMany('\App\Models\ReviewLike');
+    }
+
     public function getCommentsCountAttribute() {
         return $this->comments()->count();
+    }
+
+    public function getReviewLikesCountAttribute() {
+        return $this->review_likes()->count();
     }
 }
