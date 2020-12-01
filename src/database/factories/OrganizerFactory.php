@@ -13,5 +13,6 @@ $factory->define(Organizer::class, function (Faker $faker) {
         'tel' => $faker->phoneNumber,
         'mail' => $faker->safeEmailDomain,
         'establish' => $faker->text,
+        'company_name' => $faker->word,
     ];
 });
