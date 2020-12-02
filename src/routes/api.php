@@ -82,6 +82,9 @@ Route::delete('/likes/reviews', 'ReviewLikeController@unlike')->name('unlike.rev
 // 主催者情報の取得
 Route::get('/organizer/{organizerId}', 'OrganizerController@show')->name('organizer.show');
 
+// 会場情報の取得
+Route::get('/venues/{venueId}', 'VenueController@show')->name('venue.show');
+
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });

@@ -12,7 +12,7 @@ class Performance extends Model
         return $this->belongsTo('\App\Models\Venue');
     }
 
-    public function products() {
+    public function product() {
         return $this->belongsTo('\App\Models\Product');
     }
 }
