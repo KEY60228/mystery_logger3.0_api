@@ -15,4 +15,8 @@ class Performance extends Model
     public function product() {
         return $this->belongsTo('\App\Models\Product');
     }
+
+    public function accompanies() {
+        return $this->hasMany('\App\Models\Accompany');
+    }
 }

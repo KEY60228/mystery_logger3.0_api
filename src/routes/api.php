@@ -85,6 +85,9 @@ Route::get('/organizer/{organizerId}', 'OrganizerController@show')->name('organi
 // 会場情報の取得
 Route::get('/venues/{venueId}', 'VenueController@show')->name('venue.show');
 
+// 同行者募集情報の取得
+Route::get('/accompanies', 'AccompanyController@index')->name('accompanies');
+
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
