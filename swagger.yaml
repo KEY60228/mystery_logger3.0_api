@@ -1,0 +1,563 @@
+swagger: '2.0'
+info:
+    description: 'This is a document of mystery-logger API'
+    version: '1.0.0'
+    title: 'Mystery Logger'
+host: 'localhost:1443'
+basePath: '/v1'
+schemes:
+    -   'https'
+paths:
+    /preregister:
+        post:
+            description: '仮登録'
+            parameters:
+                -   in: 'body'
+                    name: 'preregister'
+                    description: 'メールアドレス'
+                    required: true
+                    schema:
+                        type: 'object'
+                        properties:
+                            email:
+                                type: 'string'
+                                example: 'guest@example.com'
+            responses:
+                201:
+                    description: '仮登録成功'
+                422:
+                    description: '仮登録失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    email:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /register/verify:
+        post:
+            description: 'メールアドレス認証'
+            parameters:
+                -   in: 'body'
+                    name: 'verify'
+                    description: 'メールアドレスと仮登録ID'
+                    required: true
+                    schema:
+                        type: 'object'
+                        properties:
+                            token:
+                                type: 'string'
+            responses:
+                200:
+                    description: '認証成功'
+                    schema:
+                        type: 'object'
+                        properties:
+                            email:
+                                type: 'string'
+                                example: 'guest@example.com'
+                            pre_register_id:
+                                type: 'integer'
+                                example: 1
+                422:
+                    description: '認証失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    verify:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /register:
+        post:
+            description: '本登録'
+            parameters:
+                -   in: 'body'
+                    name: 'register'
+                    description: 'ユーザー情報'
+                    required: true
+                    schema:
+                        type: 'object'
+                        properties:
+                            account_id:
+                                type: 'string'
+                                example: 'guest'
+                            email:
+                                type: 'string'
+                                example: 'guest@example.com'
+                            name:
+                                type: 'string'
+                                example: 'GUEST'
+                            password:
+                                type: 'string'
+                                example: 'guestguest'
+                            password_confirmation:
+                                type: 'string'
+                                example: 'guestguest'
+                            pre_register_id:
+                                type: 'integer'
+                                example: 1
+            responses:
+                200:
+                    description: '本登録成功'
+                    schema:
+                        type: 'object'
+                        properties:
+                            account_id:
+                                type: 'string'
+                                example: 'guest'
+                            name:
+                                type: 'string'
+                                example: 'GUEST'
+                422:
+                    description: '本登録失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    account_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    name:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    password:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    pre_register:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /login:
+        post:
+            description: 'ログイン'
+            parameters:
+                -   in: 'body'
+                    name: 'login'
+                    description: 'ユーザー情報'
+                    required: true
+                    schema:
+                        type: 'object'
+                        properties:
+                            email:
+                                type: 'string'
+                                example: 'guest@example.com'
+                            password:
+                                type: 'string'
+                                example: 'guestguest'
+            responses:
+                200:
+                    description: 'ログイン成功'
+                    schema:
+                        type: 'object'
+                        properties:
+                            account_id:
+                                type: 'string'
+                                example: 'guest'
+                            name:
+                                type: 'string'
+                                example: 'GUEST'
+                422:
+                    description: 'ログイン失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    email:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /logout:
+        post:
+            description: 'ログアウト'
+            responses:
+                200:
+                    description: 'ログアウト成功'
+    /products:
+        get:
+            description: '全作品取得'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Product'
+    /products/{id}:
+        get:
+            description: '一作品取得'
+            parameters:
+                -   in: 'path'
+                    name: 'id'
+                    description: '作品ID'
+                    required: true
+                    type: 'string'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/ProductDetail'
+    /users/{userId}:
+        get:
+            description: '一ユーザー取得'
+            parameters:
+                -   in: 'path'
+                    name: 'userId'
+                    description: 'アカウントID'
+                    required: true
+                    type: 'string'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/UserDetail'
+    /reviews:
+        post:
+            description: 'レビュー投稿'
+            parameters:
+                -   in: 'body'
+                    name: 'review'
+                    required: true
+                    schema:
+                        type: 'object'
+                        properties:
+                            user_id:
+                                type: 'string'
+                            product_id:
+                                type: 'string'
+                            contents:
+                                type: 'string'
+                            result:
+                                type: 'integer'
+                            clear_time:
+                                type: 'string'
+                            joined_at:
+                                type: 'string'
+            responses:
+                200:
+                    description: '投稿成功'
+    /reviews/{reviewId}:
+        get:
+            description: '一レビュー取得'
+            parameters:
+                -   in: 'path'
+                    name: 'reviewId'
+                    description: 'レビューID'
+                    required: true
+                    type: 'string'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/ReviewDetail'
+        put:
+            description: 'レビュー更新'
+            parameters:
+                -   in: 'path'
+                    name: 'reviewId'
+                    description: 'レビューID'
+                    required: true
+                    type: 'string'
+                -   in: 'body'
+                    name: 'review'
+                    schema:
+                        type: 'object'
+                        properties:
+                            user_id:
+                                type: 'string'
+                            product_id:
+                                type: 'string'
+                            contents:
+                                type: 'string'
+                            result:
+                                type: 'integer'
+                            clear_time:
+                                type: 'string'
+                            joined_at:
+                                type: 'string'
+            responses:
+                200:
+                    description: '更新成功'
+
+definitions:
+    Product:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            name:
+                type: 'string'
+            contents:
+                type: 'string'
+            image_name:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+            reviews_count:
+                type: 'integer'
+            avg_rating:
+                type: 'integer'
+            success_rate:
+                type: 'integer'
+            success_count:
+                type: 'integer'
+            organizer_id:
+                type: 'integer'
+            category_id:
+                type: 'integer'
+            category:
+                $ref: '#/definitions/Category'
+            limitTime:
+                type: 'string'
+            requiredTime:
+                type: 'string'
+            minParty:
+                type: 'integer'
+            maxParty:
+                type: 'integer'
+    User:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            account_id:
+                type: 'string'
+            name:
+                type: 'string'
+            profile:
+                type: 'string'
+            image_name:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+            reviews_count:
+                type: 'integer'
+            follows_count:
+                type: 'integer'
+            followers_count:
+                type: 'integer'
+            success_rate:
+                type: 'integer'
+            wannaProducts_count:
+                type: 'integer'
+            likeReviews_count:
+                type: 'integer'
+    Review:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            user_id:
+                type: 'integer'
+            product_id:
+                type: 'integer'
+            contents:
+                type: 'string'
+            result:
+                type: 'integer'
+            clear_time:
+                type: 'string'
+            rating:
+                type: 'integer'
+            joined_at:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    Organizer:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            name:
+                type: 'string'
+            website:
+                type: 'string'
+            address:
+                type: 'string'
+            tel:
+                type: 'string'
+            mail:
+                type: 'string'
+            establish:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    Venue:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            name:
+                type: 'string'
+            address:
+                type: 'string'
+            tel:
+                type: 'string'
+            organizer_id:
+                type: 'integer'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    Performance:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            product_id:
+                type: 'integer'
+            venue_id:
+                type: 'integer'
+            date:
+                type: 'string'
+            time:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    Category:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            name:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    ProductDetailWithoutReviews:
+        allOf:
+            -   $ref: '#/definitions/Product'
+            -   type: 'object'
+                properties:
+                    performances:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/PerformanceWithVenue'
+                    organizer:
+                        $ref: '#/definitions/Organizer'
+    ProductDetail:
+        allOf:
+            -   $ref: '#/definitions/ProductDetailWithoutReviews'
+            -   type: 'object'
+                properties:
+                    reviews:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/ReviewWithUser'
+    ReviewWithUser:
+        allOf:
+            -   $ref: '#/definitions/Review'
+            -   type: 'object'
+                properties:
+                    user:
+                        $ref: '#/definitions/User'
+    PerformanceWithVenue:
+        allOf:
+            -   $ref: '#/definitions/Performance'
+            -   type: 'object'
+                properties:
+                    venue:
+                        $ref: '#/definitions/Venue'
+    UserDetail:
+        allOf:
+            -   $ref: '#/definitions/User'
+            -   type: 'object'
+                properties:
+                    reviews:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/ReviewWithProduct'
+                    follows:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/User'
+                    followers:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/User'
+                    joinedProducts:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Product'
+                    wannaProducts:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Product'
+                    likeReviews:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/ReviewDetail'
+    ReviewWithProduct:
+        allOf:
+            -   $ref: '#/definitions/Review'
+            -   type: 'object'
+                properties:
+                    product:
+                        $ref: '#/definitions/Product'
+    ReviewDetail:
+        allOf:
+            -   $ref: '#/definitions/ReviewWithUser'
+            -   $ref: '#/definitions/ReviewWithProduct'
+    OrganizerDetail:
+        allOf:
+            -   $ref: '#/definitions/Organizer'
+            -   type: 'object'
+                properties:
+                    products:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Product'
+                    venues:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Venue'
+    VenueDetail:
+        allOf:
+            -   $ref: '#/definitions/Venue'
+            -   type: 'object'
+                properties:
+                    performances:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/PerformanceWithProduct'
+                    organizer:
+                        $ref: '#/definitions/Organizer'
+    PerformanceWithProduct:
+        allOf:
+            -   $ref: '#/definitions/Performance'
+            -   type: 'object'
+                properties:
+                    product:
+                        $ref: '#/definitions/Product'
