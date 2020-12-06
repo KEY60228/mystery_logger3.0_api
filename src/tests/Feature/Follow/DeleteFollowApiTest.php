@@ -8,7 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Follow;
 
-class UnfollowApiTest extends TestCase
+class DeleteFollowApiTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -17,6 +17,10 @@ class UnfollowApiTest extends TestCase
         parent::setUp();
         $this->follows = factory(User::class)->create();
         $this->follower = factory(User::class)->create();
+        $this->follow = factory(Follow::class)->create([
+            'following_id' => $this->follows->id,
+            'followed_id' => $this->follower->id,
+        ]);
     }
 
     /**
