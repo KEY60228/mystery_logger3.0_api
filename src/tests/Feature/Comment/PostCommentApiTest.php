@@ -7,9 +7,9 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Review;
-use App\Models\Comment;
+use App\Models\ReviewComment;
 
-class PostCommentApiTest extends TestCase
+class PostReviewCommentApiTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -33,7 +33,7 @@ class PostCommentApiTest extends TestCase
 
         $response = $this->json('POST', route('comment.post'), $data);
 
-        $comment = Comment::first();
+        $comment = ReviewComment::first();
 
         $response->assertStatus(201);
         $this->assertEquals($data['contents'], $comment->contents);

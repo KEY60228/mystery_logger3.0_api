@@ -36,8 +36,8 @@ class ReviewController extends Controller
             'product.category',
             'product.organizer',
             'product.performances.venue',
-            'comments',
-            'comments.user',
+            'review_comments',
+            'review_comments.user',
         ])->first();
 
         return Response::json($review, 200);

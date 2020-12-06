@@ -10,7 +10,7 @@ use App\Models\Venue;
 use App\Models\Performance;
 use App\Models\Product;
 
-class GetOrganizerApiTest extends TestCase
+class GetVenueApiTest extends TestCase
 {
     use RefreshDatabase;
 

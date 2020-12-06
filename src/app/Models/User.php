@@ -55,8 +55,8 @@ class User extends Authenticatable
         return $this->hasMany('\App\Models\Wanna');
     }
 
-    public function comments() {
-        return $this->hasMany('\App\Models\Comment');
+    public function review_comments() {
+        return $this->hasMany('\App\Models\ReviewComment');
     }
 
     public function accompany() {

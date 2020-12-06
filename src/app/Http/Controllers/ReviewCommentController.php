@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
-use App\Models\Comment;
+use App\Models\ReviewComment;
 
-class CommentController extends Controller
+class ReviewCommentController extends Controller
 {
     public function post(Request $request) {
-        $comment = Comment::create([
+        $comment = ReviewComment::create([
             'user_id' => $request->user_id,
             'review_id' => $request->review_id,
             'contents' => $request->contents,

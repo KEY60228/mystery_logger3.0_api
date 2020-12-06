@@ -71,7 +71,7 @@ Route::delete('/wanna', 'WannaController@unwanna')->name('unwanna');
 Route::put('/users/{userId}', 'UserController@update')->name('user.update');
 
 // コメント投稿
-Route::post('/reviews/comments', 'CommentController@post')->name('comment.post');
+Route::post('/reviews/comments', 'ReviewCommentController@post')->name('comment.post');
 
 // レビューへのLike
 Route::put('/likes/reviews', 'ReviewLikeController@like')->name('like.review');
