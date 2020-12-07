@@ -9,7 +9,8 @@ $factory->define(Performance::class, function (Faker $faker) {
     return [
         'product_id' => $faker->randomDigitNotNull,
         'venue_id' => $faker->randomDigitNotNull,
-        'date' => $faker->date('Y-m-d'),
-        'time' => $faker->time('H:i:s'),
+        'active_id' => $faker->numberBetween(0, 1),
+        'start_date' => $faker->date('Y-m-d'),
+        'end_date' => $faker->date('Y-m-d'),
     ];
 });

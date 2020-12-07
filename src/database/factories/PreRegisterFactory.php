@@ -9,9 +9,9 @@ use Carbon\Carbon;
 
 $factory->define(PreRegister::class, function (Faker $faker) {
     return [
-      'email' => $faker->unique()->email,
-      'token' => Str::random(250),
-      'status' => $faker->numberBetween(0, 2),
-      'expiration_time' => Carbon::now()->addHours(1),
+        'email' => $faker->unique()->email,
+        'token' => Str::random(250),
+        'status' => $faker->numberBetween(0, 2),
+        'expiration_time' => Carbon::now()->addHours(1),
     ];
 });
