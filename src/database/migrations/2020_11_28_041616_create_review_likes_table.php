@@ -24,7 +24,7 @@ class CreateReviewLikesTable extends Migration
             $table->unique(['user_id', 'review_id'], 'unique_review_likes');
         });
 
-        DB::statement("COMMENT ON TABLE review_likes IS 'レビューに対するLIKEテーブル';");
+        // DB::statement("COMMENT ON TABLE review_likes IS 'レビューに対するLIKEテーブル';");
     }
 
     /**

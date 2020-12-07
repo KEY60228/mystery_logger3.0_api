@@ -31,7 +31,7 @@ class CreateVenuesTable extends Migration
             $table->foreign('organizer_id')->references('id')->on('organizers');
         });
 
-        DB::statement("COMMENT ON TABLE venues IS '会場テーブル';");
+        // DB::statement("COMMENT ON TABLE venues IS '会場テーブル';");
     }
 
     /**

@@ -24,7 +24,7 @@ class CreateWannasTable extends Migration
             $table->unique(['user_id', 'product_id'], 'unique_wannas');
         });
 
-        DB::statement("COMMENT ON TABLE wannas IS '作品に対する行きたいテーブル';");
+        // DB::statement("COMMENT ON TABLE wannas IS '作品に対する行きたいテーブル';");
     }
 
     /**

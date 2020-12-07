@@ -31,7 +31,7 @@ class CreateUsersTable extends Migration
             $table->foreign('pre_register_id')->references('id')->on('pre_registers');
         });
 
-        DB::statement("COMMENT ON TABLE users IS 'ユーザーテーブル';");
+        // DB::statement("COMMENT ON TABLE users IS 'ユーザーテーブル';");
     }
 
     /**

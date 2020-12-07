@@ -25,7 +25,7 @@ class CreateReviewCommentsTable extends Migration
             $table->foreign('review_id')->references('id')->on('reviews');
         });
 
-        DB::statement("COMMENT ON TABLE review_comments IS 'レビューに対するコメントテーブル';");
+        // DB::statement("COMMENT ON TABLE review_comments IS 'レビューに対するコメントテーブル';");
     }
 
     /**

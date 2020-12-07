@@ -31,7 +31,7 @@ class CreateReviewsTable extends Migration
             $table->unique(['user_id', 'product_id', 'exist'], 'unique_user_id_product_id_on_reviews');
         });
 
-        DB::statement("COMMENT ON TABLE reviews IS 'レビューテーブル';");
+        // DB::statement("COMMENT ON TABLE reviews IS 'レビューテーブル';");
     }
 
     /**

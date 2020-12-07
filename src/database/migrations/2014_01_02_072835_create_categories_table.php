@@ -20,7 +20,7 @@ class CreateCategoriesTable extends Migration
             $table->timestamps();
         });
 
-        DB::statement("COMMENT ON TABLE categories IS 'カテゴリーテーブル'");
+        // DB::statement("COMMENT ON TABLE categories IS 'カテゴリーテーブル'");
     }
 
     /**

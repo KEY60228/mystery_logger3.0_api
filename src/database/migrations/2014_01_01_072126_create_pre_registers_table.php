@@ -23,7 +23,7 @@ class CreatePreRegistersTable extends Migration
             $table->timestamps();
         });
 
-        DB::statement("COMMENT ON TABLE pre_registers IS '仮登録テーブル';");
+        // DB::statement("COMMENT ON TABLE pre_registers IS '仮登録テーブル';");
     }
 
     /**

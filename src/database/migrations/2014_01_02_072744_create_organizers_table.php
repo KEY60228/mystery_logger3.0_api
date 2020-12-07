@@ -32,7 +32,7 @@ class CreateOrganizersTable extends Migration
             $table->timestamps();
         });
 
-        DB::statement("COMMENT ON TABLE organizers IS '主催団体・企業テーブル';");
+        // DB::statement("COMMENT ON TABLE organizers IS '主催団体・企業テーブル';");
     }
 
     /**

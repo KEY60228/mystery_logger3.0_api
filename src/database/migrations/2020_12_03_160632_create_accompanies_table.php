@@ -26,7 +26,7 @@ class CreateAccompaniesTable extends Migration
             $table->foreign('performance_id')->references('id')->on('performances');
         });
 
-        DB::statement("COMMENT ON TABLE accompanies IS '同行者募集テーブル';");
+        // DB::statement("COMMENT ON TABLE accompanies IS '同行者募集テーブル';");
     }
 
     /**

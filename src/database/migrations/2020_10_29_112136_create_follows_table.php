@@ -24,7 +24,7 @@ class CreateFollowsTable extends Migration
             $table->unique(['following_id', 'followed_id'], 'unique_follows');
         });
 
-        DB::statement("COMMENT ON TABLE follows IS 'フォロー関係テーブル';");
+        // DB::statement("COMMENT ON TABLE follows IS 'フォロー関係テーブル';");
     }
 
     /**

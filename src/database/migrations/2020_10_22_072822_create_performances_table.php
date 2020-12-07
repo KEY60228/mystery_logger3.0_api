@@ -26,7 +26,7 @@ class CreatePerformancesTable extends Migration
             $table->foreign('venue_id')->references('id')->on('venues');
         });
 
-        DB::statement("COMMENT ON TABLE performances IS '公演テーブル';");
+        // DB::statement("COMMENT ON TABLE performances IS '公演テーブル';");
     }
 
     /**

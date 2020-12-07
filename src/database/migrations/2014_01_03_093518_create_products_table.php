@@ -32,7 +32,7 @@ class CreateProductsTable extends Migration
             $table->foreign('category_id')->references('id')->on('categories');
         });
 
-        DB::statement("COMMENT ON TABLE products IS '作品テーブル';");
+        // DB::statement("COMMENT ON TABLE products IS '作品テーブル';");
     }
 
     /**
