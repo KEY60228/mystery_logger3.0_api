@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-class CreateReviewLikesTable extends Migration
+class CreateReviewCommentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,17 +14,18 @@ class CreateReviewLikesTable extends Migration
      */
     public function up()
     {
-        Schema::create('review_likes', function (Blueprint $table) {
+        Schema::create('review_comments', function (Blueprint $table) {
             $table->bigIncrements('id')->comment('代理キー');
             $table->integer('user_id')->comment('ユーザーID');
             $table->integer('review_id')->comment('レビューID');
+            $table->string('contents')->comment('コメント内容');
+            $table->softDeletes();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('review_id')->references('id')->on('reviews');
-            $table->unique(['user_id', 'review_id'], 'unique_review_likes');
         });
 
-        DB::statement("COMMENT ON TABLE review_likes IS 'レビューに対するLIKEテーブル';");
+        DB::statement("COMMENT ON TABLE review_comments IS 'レビューに対するコメントテーブル';");
     }
 
     /**
@@ -34,6 +35,6 @@ class CreateReviewLikesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('review_likes');
+        Schema::dropIfExists('review_comments');
     }
 }
