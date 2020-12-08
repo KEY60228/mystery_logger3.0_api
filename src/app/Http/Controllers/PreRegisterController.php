@@ -16,7 +16,7 @@ class PreRegisterController extends Controller
     /**
      * 仮登録処理
      * 
-     * @param Illuminate\Http\Request $request
+     * @param App\Http\Requests\PreRegisterRequest $request
      * @return Illuminate\Support\Facades\Response
      */
     public function preregister(PreRegisterRequest $request)
@@ -39,5 +39,38 @@ class PreRegisterController extends Controller
         Mail::to($preRegister->email)->send($mail);
 
         return Response::json([], 201);
+    }
+
+    /**
+     * メールアドレス認証処理
+     * 
+     * @param Illuminate\Http\Request $request
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function verify(Request $request)
+    {
+        $preUser = PreRegister::whereToken($request->json('token'))->first();
+
+        if (
+            is_null($preUser)
+            || $preUser->status == PreRegister::REGISTERED
+            || Carbon::now()->gt($preUser->expiration_time)
+        ) {
+            return Response::json([
+                'errors' => [
+                    'verify' => [
+                        'トークンが不正です。'
+                    ]
+                ],
+                'message' => 'The given token was invalid.'
+            ], 422);
+        }
+
+        $preUser->update(['status' => PreRegister::MAIL_VERIFY]);
+
+        return Response::json([
+            'email' => $preUser->email,
+            'pre_register_id' => $preUser->id,
+        ], 200);
     }
 }

@@ -11,109 +11,124 @@ use Carbon\Carbon;
 
 class EmailVerificationApiTest extends TestCase
 {
-  use RefreshDatabase;
+    use RefreshDatabase;
 
-  protected function setUp(): void
-  {
-    parent::setUp();
+    protected function setUp(): void
+    {
+        parent::setUp();
+    }
 
-    $this->artisan('migrate');
-  }
+    /**
+     * @test
+     */
+    public function 正常系()
+    {
+        $preUser = factory(PreRegister::class)->create([
+            'status' => PreRegister::SEND_MAIL,
+        ]);
 
-  /**
-   * @test
-   */
-  public function 正常系()
-  {
-    $preUser = factory(PreRegister::class)->create([
-      'status' => PreRegister::SEND_MAIL,
-    ]);
+        $data = [
+            'token' => $preUser->token,
+        ];
 
-    $data = [
-      'token' => $preUser->token,
-    ];
+        $response = $this->json('POST', route('verify'), $data);
 
-    $response = $this->json('POST', route('verify'), $data);
-
-    $this->assertEquals($preUser->email, $response['email']);
-    $this->assertEquals($preUser->id, $response['pre_register_id']);
-    $response->assertStatus(200);
-  }
-  
-  /**
-   * @test
-   */
-  public function 正常系_認証済トークン()
-  {
-    $preUser = factory(PreRegister::class)->create([
-      'status' => PreRegister::MAIL_VERIFY,
-      ]);
-
-      $data = [
-        'token' => $preUser->token,
-      ];
+        $response->assertStatus(200)->assertJson([
+            'email' => $preUser->email,
+            'pre_register_id' => $preUser->id,
+        ]);
+    }
     
-      $response = $this->json('POST', route('verify'), $data);
-    
-      $this->assertEquals($preUser->email, $response['email']);
-      $this->assertEquals($preUser->id, $response['pre_register_id']);
-    $response->assertStatus(200);
-  }
-  
-  /**
-   * @test
-   */
-  public function 不正系_トークン不整合()
-  {
-    $data = [
-      'token' => Str::random(250),
-    ];
+    /**
+     * @test
+     */
+    public function 正常系_認証済トークン()
+    {
+        $preUser = factory(PreRegister::class)->create([
+            'status' => PreRegister::MAIL_VERIFY,
+        ]);
 
-    $response = $this->json('POST', route('verify'), $data);
+        $data = [
+            'token' => $preUser->token,
+        ];
 
-    $response->assertStatus(422);
-  }
-  
-  /**
-   * @test
-   */
-  public function 不正系_有効期限切れトークン()
-  {
-    $preUser = factory(PreRegister::class)->create([
-      'status' => PreRegister::SEND_MAIL,
-      'expiration_time' => Carbon::yesterday(),
-    ]);
+        $response = $this->json('POST', route('verify'), $data);
+
+        $response->assertStatus(200)->assertJson([
+            'email' => $preUser->email,
+            'pre_register_id' => $preUser->id,
+        ]);
+    }
     
-    $data = [
-      'token' => $preUser->token,
-    ];
+    /**
+     * @test
+     */
+    public function 不正系_トークン不整合()
+    {
+        $data = [
+            'token' => Str::random(250),
+        ];
+
+        $response = $this->json('POST', route('verify'), $data);
+
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'verify' => [
+                    'トークンが不正です。'
+                ]
+            ],
+            'message' => 'The given token was invalid.',
+        ]);
+    }
     
-    $response = $this->json('POST', route('verify'), $data);
-  
-    $response->assertStatus(422)->assertJson([
-      'errors' => ['verify' => ['The given token was invalid']],
-      'message' => 'The given data was invalid.'
-    ]);
-  }
-  
-  /**
-   * @test
-   */
-  public function 不正系_本登録済トークン()
-  {
-    $preUser = factory(PreRegister::class)->create([
-      'status' => PreRegister::REGISTERED,
-    ]);
+    /**
+     * @test
+     */
+    public function 不正系_有効期限切れトークン()
+    {
+        $preUser = factory(PreRegister::class)->create([
+            'status' => PreRegister::SEND_MAIL,
+            'expiration_time' => Carbon::yesterday(),
+        ]);
+
+        $data = [
+            'token' => $preUser->token,
+        ];
+
+        $response = $this->json('POST', route('verify'), $data);
+
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'verify' => [
+                    'トークンが不正です。'
+                ]
+            ],
+            'message' => 'The given token was invalid.'
+        ]);
+    }
     
-    $data = [
-      'token' => $preUser->token,
-    ];
+    /**
+     * @test
+     */
+    public function 不正系_本登録済トークン()
+    {
+        $preUser = factory(PreRegister::class)->create([
+            'status' => PreRegister::REGISTERED,
+        ]);
+
+        $data = [
+            'token' => $preUser->token,
+        ];
+
+        $response = $this->json('POST', route('verify'), $data);
     
-    $response = $this->json('POST', route('verify'), $data);
-  
-    $response->assertStatus(422)->assertJson([
-      'errors' => ['verify' => ['The given token was invalid']],
-      'message' => 'The given data was invalid.'
-    ]);
-  }
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'verify' => [
+                    'トークンが不正です。'
+                ]
+            ],
+            'message' => 'The given token was invalid.'
+        ]);
+    }
 }
