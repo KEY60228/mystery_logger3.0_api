@@ -23,8 +23,8 @@ class LoginApiTest extends TestCase
     public function 正常系()
     {
         $data = [
-        'email' => $this->user->email,
-        'password' => 'password',
+            'email' => $this->user->email,
+            'password' => 'password',
         ];
 
         $response = $this->json('POST', route('login'), $data);
@@ -34,6 +34,9 @@ class LoginApiTest extends TestCase
             'name' => $this->user->name,
             'follows_id' => $this->user->follows_id,
             'followers_id' => $this->user->followers_id,
+            'done_id' => $this->user->done_id,
+            'wanna_id' => $this->user->wanna_id,
+            'like_reviews_id' => $this->user->like_reviews_id,
         ]);
 
         $this->assertAuthenticatedAs($this->user);
@@ -45,13 +48,23 @@ class LoginApiTest extends TestCase
     public function 不正系_不正なemail、password()
     {
         $data = [
-        'email' => '',
-        'password' => '',
+            'email' => '',
+            'password' => '',
         ];
 
         $response = $this->json('POST', route('login'), $data);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'email' => [
+                    'emailは必須です。'
+                ],
+                'password' => [
+                    'passwordは必須です。'
+                ],
+            ],
+            'message' => 'The given data was invalid.',
+        ]);
     }
     
     /**
@@ -60,12 +73,19 @@ class LoginApiTest extends TestCase
     public function 不正系_照合が合わない()
     {
         $data = [
-        'email' => $this->user->email,
-        'password' => 'pass',
+            'email' => $this->user->email,
+            'password' => 'pass',
         ];
     
         $response = $this->json('POST', route('login'), $data);
     
-        $response->assertStatus(422);    
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'email' => [
+                    '認証に失敗しました。',
+                ],
+            ],
+            'message' => 'The given data was invalid.',
+        ]);
     }
 }
