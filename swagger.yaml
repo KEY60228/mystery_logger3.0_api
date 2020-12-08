@@ -353,30 +353,20 @@ definitions:
         properties:
             id:
                 type: 'integer'
-            name:
-                type: 'string'
-            contents:
-                type: 'string'
-            image_name:
-                type: 'string'
-            created_at:
-                type: 'string'
-            updated_at:
-                type: 'string'
-            reviews_count:
-                type: 'integer'
-            avg_rating:
-                type: 'integer'
-            success_rate:
-                type: 'integer'
-            success_count:
-                type: 'integer'
             organizer_id:
                 type: 'integer'
             category_id:
                 type: 'integer'
-            category:
-                $ref: '#/definitions/Category'
+            name:
+                type: 'string'
+            kana_name:
+                type: 'string'
+            phrase:
+                type: 'string'
+            website:
+                type: 'string'
+            image_name:
+                type: 'string'
             limitTime:
                 type: 'string'
             requiredTime:
@@ -384,6 +374,20 @@ definitions:
             minParty:
                 type: 'integer'
             maxParty:
+                type: 'integer'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+            avg_rating:
+                type: 'integer'
+            success_count:
+                type: 'integer'
+            na_count:
+                type: 'integer'
+            success_rate:
+                type: 'integer'
+            reviews_count:
                 type: 'integer'
     User:
         type: 'object'
@@ -402,18 +406,30 @@ definitions:
                 type: 'string'
             updated_at:
                 type: 'string'
+            follows_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+            followers_id:
+                type: 'array'
+                items:
+                    type: 'integer'
             reviews_count:
-                type: 'integer'
-            follows_count:
-                type: 'integer'
-            followers_count:
                 type: 'integer'
             success_rate:
                 type: 'integer'
-            wannaProducts_count:
-                type: 'integer'
-            likeReviews_count:
-                type: 'integer'
+            done_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+            wanna_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+            like_reviews_id:
+                type: 'array'
+                items:
+                    type: 'integer'
     Review:
         type: 'object'
         properties:
@@ -423,12 +439,12 @@ definitions:
                 type: 'integer'
             product_id:
                 type: 'integer'
+            spoil:
+                type: 'boolean'
             contents:
                 type: 'string'
             result:
                 type: 'integer'
-            clear_time:
-                type: 'string'
             rating:
                 type: 'integer'
             joined_at:
@@ -437,22 +453,40 @@ definitions:
                 type: 'string'
             updated_at:
                 type: 'string'
+            review_comments_count:
+                type: 'integer'
+            review_likes_count:
+                type: 'integer'
     Organizer:
         type: 'object'
         properties:
             id:
                 type: 'integer'
-            name:
+            service_name:
+                type: 'string'
+            kana_service_name:
+                type: 'string'
+            company_name:
+                type: 'string'
+            kana_company_name:
                 type: 'string'
             website:
                 type: 'string'
-            address:
+            image_name:
+                type: 'string'
+            zipcode:
+                type: 'string'
+            addr_prefecture:
+                type: 'string'
+            addr_city:
+                type: 'string'
+            addr_block:
+                type: 'string'
+            addr_building:
                 type: 'string'
             tel:
                 type: 'string'
             mail:
-                type: 'string'
-            establish:
                 type: 'string'
             created_at:
                 type: 'string'
@@ -463,14 +497,28 @@ definitions:
         properties:
             id:
                 type: 'integer'
+            organizer_id:
+                type: 'integer'
             name:
                 type: 'string'
-            address:
+            kana_name:
+                type: 'string'
+            zipcode:
+                type: 'string'
+            addr_prefecture:
+                type: 'string'
+            addr_city:
+                type: 'string'
+            addr_block:
+                type: 'string'
+            addr_building:
+                type: 'string'
+            lat:
+                type: 'string'
+            long:
                 type: 'string'
             tel:
                 type: 'string'
-            organizer_id:
-                type: 'integer'
             created_at:
                 type: 'string'
             updated_at:
@@ -484,9 +532,11 @@ definitions:
                 type: 'integer'
             venue_id:
                 type: 'integer'
-            date:
+            active_id:
+                type: 'integer'
+            start_date:
                 type: 'string'
-            time:
+            end_date:
                 type: 'string'
             created_at:
                 type: 'string'
@@ -503,6 +553,7 @@ definitions:
                 type: 'string'
             updated_at:
                 type: 'string'
+
     ProductDetailWithoutReviews:
         allOf:
             -   $ref: '#/definitions/Product'
