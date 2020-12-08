@@ -5,17 +5,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use App\Models\PreRegister;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
-use App\Models\PreRegister;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\EmailVerification;
 use Illuminate\Auth\Events\Registered;
+use App\Http\Requests\RegisterRequest;
 
 class RegisterController extends Controller
 {
@@ -50,21 +46,6 @@ class RegisterController extends Controller
     }
 
     /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'account_id' => ['required', 'string', 'max:16', 'unique:users'],
-            'name' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-    }
-
-    /**
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
@@ -85,22 +66,24 @@ class RegisterController extends Controller
     /**
      * 本登録処理
      * 
-     * @param Illuminate\Http\Request $request
+     * @param App\Http\Requests\RegisterRequest $request
      * @return Illuminate\Support\Facades\Response
      */
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $this->validator($request->all())->validate();
-
-        $preUser = PreRegister::find($request->json('pre_register_id'));
+        $preUser = PreRegister::find($request->pre_register_id);
 
         if (
             is_null($preUser)
             || $preUser->status != PreRegister::MAIL_VERIFY
-            || $preUser->email != $request->json('email')
+            || $preUser->email != $request->email
         ) {
             return Response::json([
-                'errors' => ['pre_register' => ['The given email have not been pre-registered']],
+                'errors' => [
+                    'pre_register' => [
+                        'メールアドレスが未認証です。'
+                    ]
+                ],
                 'message' => 'The given data was invalid.'
             ], 422);
         }
