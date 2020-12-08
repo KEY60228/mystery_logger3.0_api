@@ -21,7 +21,6 @@ paths:
                         properties:
                             email:
                                 type: 'string'
-                                example: 'guest@example.com'
             responses:
                 201:
                     description: '仮登録成功'
@@ -37,8 +36,10 @@ paths:
                                         type: 'array'
                                         items:
                                             type: 'string'
+                                            example: 'emailは必須です'
                             message:
                                 type: 'string'
+                                example: 'The given data was invalid'
     /register/verify:
         post:
             description: 'メールアドレス認証'
@@ -76,8 +77,10 @@ paths:
                                         type: 'array'
                                         items:
                                             type: 'string'
+                                            example: 'トークンが不正です'
                             message:
                                 type: 'string'
+                                example: 'The given token was invalid.'
     /register:
         post:
             description: '本登録'
@@ -91,34 +94,50 @@ paths:
                         properties:
                             account_id:
                                 type: 'string'
-                                example: 'guest'
                             email:
                                 type: 'string'
-                                example: 'guest@example.com'
                             name:
                                 type: 'string'
-                                example: 'GUEST'
                             password:
                                 type: 'string'
-                                example: 'guestguest'
                             password_confirmation:
                                 type: 'string'
-                                example: 'guestguest'
                             pre_register_id:
                                 type: 'integer'
-                                example: 1
             responses:
                 200:
                     description: '本登録成功'
                     schema:
                         type: 'object'
                         properties:
+                            id:
+                                type: 'integer'
                             account_id:
                                 type: 'string'
                                 example: 'guest'
                             name:
                                 type: 'string'
                                 example: 'GUEST'
+                            follows_id:
+                                type: 'array'
+                                items:
+                                    type: 'integer'
+                            followers_id:
+                                type: 'array'
+                                items:
+                                    type: 'integer'
+                            done_id:
+                                type: 'array'
+                                items:
+                                    type: 'integer'
+                            wanna_id:
+                                type: 'array'
+                                items:
+                                    type: 'integer'
+                            like_reviews_id:
+                                type: 'array'
+                                items:
+                                    type: 'integer'
                 422:
                     description: '本登録失敗'
                     schema:
@@ -139,7 +158,11 @@ paths:
                                         type: 'array'
                                         items:
                                             type: 'string'
-                                    pre_register:
+                                    pre_register_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    email:
                                         type: 'array'
                                         items:
                                             type: 'string'
