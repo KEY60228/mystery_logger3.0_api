@@ -83,40 +83,6 @@ class RegisterController extends Controller
     }
 
     /**
-     * 仮登録処理
-     * 
-     * @param Illuminate\Http\Request $request
-     * @return Illuminate\Support\Facades\Response
-     */
-    public function preregister(Request $request)
-    {
-        $emailValidator = [
-            'email' => ['required', 'string', 'email', 'unique:users'],
-        ];
-
-        $this->validate($request, $emailValidator);
-
-        if ($preRegister = PreRegister::whereEmail($request->json('email'))->first()) {
-            $preRegister->update([
-                'token' => Str::random(250),
-                'expiration_time' => Carbon::now()->addHours(1),
-            ]);
-        } else {
-            $preRegister = PreRegister::create([
-                'email' => $request->json('email'),
-                'token' => Str::random(250),
-                'status' => PreRegister::SEND_MAIL,
-                'expiration_time' => Carbon::now()->addHours(1),
-            ]);
-        }
-
-        $mail = new EmailVerification($preRegister);
-        Mail::to($preRegister->email)->send($mail);
-
-        return Response::json([], 201);
-    }
-
-    /**
      * メールアドレス認証処理
      * 
      * @param Illuminate\Http\Request $request

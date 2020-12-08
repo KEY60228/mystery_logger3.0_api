@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 */
 
 // 仮登録
-Route::post('/preregister', 'Auth\RegisterController@preregister')->name('preregister');
+Route::post('/preregister', 'PreRegisterController@preregister')->name('preregister');
 
 // メールアドレス認証
 Route::post('/register/verify', 'Auth\RegisterController@verify')->name('verify');
