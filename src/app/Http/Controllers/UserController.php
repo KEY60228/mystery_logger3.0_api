@@ -24,17 +24,17 @@ class UserController extends Controller
             'review_likes.review',
             'review_likes.review.user',
             'review_likes.review.product',
-        ])->withCount([
-            'follows',
-            'followers',
-            'wannas'
         ])->first();
 
-        if (is_null($user)) {
-            // エラーハンドリング
-            return Response::json([], 422);
+        if (!$user) {
+            return Response::json([
+                'errors' => [
+                    'account_id' => '指定されたアカウントIDのユーザーはいません。',
+                ],
+                'messages' => 'The given data was invalid.',
+            ], 404);
         }
-
+        
         return Response::json($user, 200);
     }
 

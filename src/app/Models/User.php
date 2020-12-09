@@ -37,7 +37,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    protected $appends = ['reviews_count', 'success_rate', 'like_reviews_id'];
+    protected $appends = [
+        'follows_count',
+        'follows_id',
+        'followers_count',
+        'followers_id',
+        'success_rate',
+        'reviews_count',
+        'done_id',
+        'wannas_count',
+        'wanna_id',
+        'like_reviews_count',
+        'like_reviews_id',
+    ];
     
     public function reviews() {
         return $this->hasMany('\App\Models\Review');
@@ -59,7 +71,7 @@ class User extends Authenticatable
         return $this->hasMany('\App\Models\ReviewComment');
     }
 
-    public function accompany() {
+    public function accompanies() {
         return $this->hasMany('\App\Models\Accompany');
     }
 
@@ -67,12 +79,20 @@ class User extends Authenticatable
         return $this->hasMany('\App\Models\ReviewLike');
     }
 
+    public function getFollowsCountAttribute() {
+        return $this->follows()->count();
+    }
+    
     public function getFollowsIdAttribute() {
         $follows_id = [];
         foreach ($this->follows as $follow) {
             $follows_id[] = $follow->id;
         }
         return $follows_id;
+    }
+    
+    public function getFollowersCountAttribute() {
+        return $this->followers()->count();
     }
 
     public function getFollowersIdAttribute() {
@@ -81,10 +101,6 @@ class User extends Authenticatable
             $followers_id[] = $follower->id;
         }
         return $followers_id;
-    }
-
-    public function getReviewsCountAttribute() {
-        return $this->reviews()->count();
     }
 
     public function getSuccessRateAttribute() {
@@ -104,6 +120,10 @@ class User extends Authenticatable
         return $success / $reviews;
     }
 
+    public function getReviewsCountAttribute() {
+        return $this->reviews()->count();
+    }
+
     public function getDoneIdAttribute() {
         $done_id = [];
         foreach ($this->reviews as $review) {
@@ -112,12 +132,20 @@ class User extends Authenticatable
         return $done_id;
     }
 
+    public function getWannasCountAttribute() {
+        return $this->wannas()->count();
+    }
+
     public function getWannaIdAttribute() {
         $wanna_id = [];
         foreach ($this->wannas as $wanna) {
             $wanna_id[] = $wanna->product_id;
         }
         return $wanna_id;
+    }
+
+    public function getLikeReviewsCountAttribute() {
+        return $this->review_likes()->count();
     }
 
     public function getLikeReviewsIdAttribute() {

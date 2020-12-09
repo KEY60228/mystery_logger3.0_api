@@ -49,8 +49,8 @@ class getUserDetailApiTest extends TestCase
                     'success_count' => $this->product->success_count,
                     'category' => [
                         'id' => $this->category->id,
-                    ]
-                ]
+                    ],
+                ],
             ]],
             'reviews_count' => $this->user->reviews->count(),
             'success_rate' => $this->user->success_rate,
@@ -60,9 +60,14 @@ class getUserDetailApiTest extends TestCase
     public function 該当しないID()
     {
         $response = $this->json('GET', route('user.show', [
-            'userId' => 'a',
+            'userId' => '9999999',
         ]));
 
-        $response->assertStatus(422);
+        $response->assertStatus(404)->assertJson([
+            'errors' => [
+                'account_id' => '指定のアカウントIDのユーザーはいません。'
+            ],
+            'message' => 'The given data was invalid.',
+        ]);
     }
 }

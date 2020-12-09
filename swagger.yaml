@@ -193,7 +193,6 @@ paths:
                         type: 'array'
                         items:
                             $ref: '#/definitions/Product.index'
-
     /products/{id}:
         get:
             description: '一作品取得'
@@ -208,6 +207,20 @@ paths:
                     description: '取得成功'
                     schema:
                         $ref: '#/definitions/Product.detail'
+                404:
+                    description: '取得失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    product_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
     /users/{userId}:
         get:
             description: '一ユーザー取得'
@@ -221,7 +234,22 @@ paths:
                 200:
                     description: '取得成功'
                     schema:
-                        $ref: '#/definitions/UserDetail'
+                        $ref: '#/definitions/User.detail'
+                404:
+                    description: '取得失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    product_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+
     /reviews:
         post:
             description: 'レビュー投稿'
@@ -351,26 +379,34 @@ definitions:
                 type: 'string'
             updated_at:
                 type: 'string'
+            follows_count:
+                type: 'integer'
             follows_id:
                 type: 'array'
                 items:
                     type: 'integer'
+            followers_count:
+                type: 'integer'
             followers_id:
                 type: 'array'
                 items:
                     type: 'integer'
-            reviews_count:
-                type: 'integer'
             success_rate:
+                type: 'integer'
+            reviews_count:
                 type: 'integer'
             done_id:
                 type: 'array'
                 items:
                     type: 'integer'
+            wannas_count:
+                type: 'integer'
             wanna_id:
                 type: 'array'
                 items:
                     type: 'integer'
+            like_reviews_count:
+                type: 'integer'
             like_reviews_id:
                 type: 'array'
                 items:
@@ -498,6 +534,32 @@ definitions:
                 type: 'string'
             updated_at:
                 type: 'string'
+    Wanna:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            user_id:
+                type: 'integer'
+            product_id:
+                type: 'integer'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    ReviewLike:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            user_id:
+                type: 'integer'
+            product_id:
+                type: 'integer'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
 
     CurrentUser:
         type: 'object'
@@ -562,6 +624,58 @@ definitions:
                                     properties:
                                         user:
                                             $ref: '#/definitions/User'
+    User.detail:
+        allOf:
+            -   $ref: '#/definitions/User'
+            -   type: 'object'
+                properties:
+                    reviews:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/Review'
+                                -   type: 'object'
+                                    properties:
+                                        product:
+                                            allOf:
+                                              -   $ref: '#/definitions/Product'
+                                              -   type: 'object'
+                                                  properties:
+                                                      category:
+                                                          $ref: '#/definitions/Category'
+                    wannas:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/Wanna'
+                                -   type: 'object'
+                                    properties:
+                                        product:
+                                            $ref: '#/definitions/Product'
+                    follows:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/User'
+                    followers:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/User'
+                    review_likes:
+                        type: 'array'
+                        items:
+                            allOf:
+                              -   $ref: '#/definitions/ReviewLike'
+                              -   type: 'object'
+                                  properties:
+                                      review:
+                                          allOf:
+                                              -   $ref: '#/definitions/Review'
+                                              -   type: 'object'
+                                                  properties:
+                                                      user:
+                                                          $ref: '#/definitions/User'
+                                                      product:
+                                                          $ref: '#/definitions/Product'
 
     ProductDetailWithoutReviews:
         allOf:
