@@ -82,7 +82,26 @@ class ReviewController extends Controller
     }
 
     public function delete(Request $request, $id) {
-        Review::find($id)->delete();
+        $review = Review::find($id);
+
+        if (!$review) {
+            return Response::json([
+                'errors' => [
+                    'review_id' => [
+                        '指定されたIDのレビューは存在しません。',
+                    ],
+                ],
+                'message' => 'The given data was invalid.',
+            ], 404);
+        }
+
+        if ((Integer)$review->user_id !== $request->user()->id) {
+            return Response::json([
+                'message' => '不正な操作です。',
+            ], 422);
+        }
+
+        $review->delete();
 
         return Response::json([], 204);
     }

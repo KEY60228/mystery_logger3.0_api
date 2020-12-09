@@ -426,6 +426,45 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
+        delete:
+            description: 'レビュー削除'
+            parameters:
+                -   in: 'path'
+                    name: 'reviewId'
+                    description: 'レビューID'
+                    required: true
+                    type: 'string'
+            responses:
+                204:
+                    description: '削除成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                404:
+                    description: '削除失敗 ID不備'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+                422:
+                    description: '削除失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
 
 definitions:
     Product:
