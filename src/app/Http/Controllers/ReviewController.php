@@ -51,7 +51,20 @@ class ReviewController extends Controller
     }
 
     public function update(UpdateReviewRequest $request, $id) {
-        $review = Review::find($id)->update([
+        $review = Review::find($id);
+
+        if (!$review) {
+            return Response::json([
+                'errors' => [
+                    'review_id' => [
+                        '指定されたIDのレビューは存在しません。',
+                    ],
+                ],
+                'message' => 'The given data was invalid.',
+            ], 404);
+        }
+
+        $review->update([
             'contents' => $request->contents,
             'spoil' => $request->spoil,
             'result' => $request->result,

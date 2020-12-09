@@ -39,7 +39,7 @@ class PostReviewRequest extends FormRequest
             'contents' => ['max:255', 'string'],
             'spoil' => ['required', 'boolean'],
             'result' => ['required', 'between:0,2', 'integer'],
-            'rating' => ['between:1,5', 'nullable'],
+            'rating' => ['required', 'between:0,5'],
             'joined_at' => ['date', 'before_or_equal:' . $today, 'nullable'],
         ];
     }

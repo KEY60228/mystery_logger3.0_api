@@ -340,7 +340,6 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
-
         put:
             description: 'レビュー更新'
             parameters:
@@ -369,6 +368,50 @@ paths:
             responses:
                 200:
                     description: '更新成功'
+                404:
+                    description: '更新失敗 ID不備'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+                422:
+                    description: '投稿失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    contents:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    spoil:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    result:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    rating:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    joined_at:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
 
 definitions:
     Product:
