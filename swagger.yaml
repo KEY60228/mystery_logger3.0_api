@@ -192,7 +192,8 @@ paths:
                     schema:
                         type: 'array'
                         items:
-                            $ref: '#/definitions/Product'
+                            $ref: '#/definitions/Product.index'
+
     /products/{id}:
         get:
             description: '一作品取得'
@@ -330,6 +331,8 @@ definitions:
             success_rate:
                 type: 'integer'
             reviews_count:
+                type: 'integer'
+            wannas_count:
                 type: 'integer'
     User:
         type: 'object'
@@ -527,6 +530,24 @@ definitions:
                 type: 'array'
                 items:
                     type: 'integer'
+    Product.index:
+        allOf:
+            -   $ref: '#/definitions/Product'
+            -   type: 'object'
+                properties:
+                    category:
+                        $ref: '#/definitions/Category'
+                    performances:
+                        type: 'array'
+                        items:
+                            allOf:
+                              -   $ref: '#/definitions/Performance'
+                              -   type: 'object'
+                                  properties:
+                                      venue:
+                                          $ref: '#/definitions/Venue'
+                    organizer:
+                        $ref: '#/definitions/Organizer'
 
     ProductDetailWithoutReviews:
         allOf:

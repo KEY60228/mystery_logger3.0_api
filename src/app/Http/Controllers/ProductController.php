@@ -15,7 +15,7 @@ class ProductController extends Controller
             'performances',
             'performances.venue',
             'organizer'
-        ])->withCount('wannas')->get();
+        ])->get();
         return Response::json($products, 200);
     }
 
@@ -27,7 +27,7 @@ class ProductController extends Controller
             'performances',
             'performances.venue',
             'organizer'
-        ])->withCount('wannas')->first();
+        ])->first();
         return Response::json($product, 200);
     }
 }
