@@ -42,6 +42,13 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    /**
+     * 認証後動作
+     * 
+     * @param \Illuminate\Http\Request  $request
+     * @param mixed  $user
+     * @return \Illuminate\Support\Facades\Response
+     */
     public function authenticated(Request $request, $user)
     {
         return Response::json([
@@ -56,6 +63,12 @@ class LoginController extends Controller
         ], 200);
     }
 
+    /**
+     * ログアウト後挙動
+     * 
+     * @param \Illuminate\Http\Request  $request
+     * @return \Illuminate\Support\Facades\Response
+     */
     protected function loggedOut(Request $request)
     {
         return Response::json([], 200);
@@ -64,7 +77,7 @@ class LoginController extends Controller
     /**
      * AuthenticateUsersのsendFailedLoginResponseのオーバーライド
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \Illuminate\Validation\ValidationException

@@ -12,6 +12,13 @@ use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
+    /**
+     * ユーザー詳細
+     * 
+     * @param Illuminate\Http\Request
+     * @param string $id
+     * @return Illuminate\Support\Facades\Response
+     */
     public function show(Request $request, $id) {
         $user = User::whereAccountId($id)->with([
             'reviews',

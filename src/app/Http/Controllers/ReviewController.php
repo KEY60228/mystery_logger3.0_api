@@ -11,6 +11,12 @@ use App\Models\User;
 
 class ReviewController extends Controller
 {
+    /**
+     * レビュー投稿
+     * 
+     * @param App\Http\Requests\PostReviewRequest
+     * @return Illuminate\Support\Facades\Response
+     */
     public function post(PostReviewRequest $request) {
         $review = Review::create([
             'user_id' => $request->user()->id,
@@ -25,6 +31,13 @@ class ReviewController extends Controller
         return Response::json([], 201);
     }
 
+    /**
+     * レビュー詳細
+     * 
+     * @param Illuminate\Http\Request
+     * @param string $id
+     * @return Illuminate\Support\Facades\Response
+     */
     public function show(Request $request, $id) {
         $review = Review::whereId($id)->with([
             'user',
@@ -50,6 +63,13 @@ class ReviewController extends Controller
         return Response::json($review, 200);
     }
 
+    /**
+     * レビュー更新
+     * 
+     * @param App\Http\Requests\UpdateReviewRequest
+     * @param string $id
+     * @return Illuminate\Support\Facades\Response
+     */
     public function update(UpdateReviewRequest $request, $id) {
         $review = Review::find($id);
 
@@ -81,6 +101,13 @@ class ReviewController extends Controller
         return Response::json([], 200);
     }
 
+    /**
+     * レビュー削除
+     * 
+     * @param Illuminate\Http\Request
+     * @param string $id
+     * @return Illuminate\Support\Facades\Response
+     */
     public function delete(Request $request, $id) {
         $review = Review::find($id);
 
