@@ -108,36 +108,7 @@ paths:
                 200:
                     description: '本登録成功'
                     schema:
-                        type: 'object'
-                        properties:
-                            id:
-                                type: 'integer'
-                            account_id:
-                                type: 'string'
-                                example: 'guest'
-                            name:
-                                type: 'string'
-                                example: 'GUEST'
-                            follows_id:
-                                type: 'array'
-                                items:
-                                    type: 'integer'
-                            followers_id:
-                                type: 'array'
-                                items:
-                                    type: 'integer'
-                            done_id:
-                                type: 'array'
-                                items:
-                                    type: 'integer'
-                            wanna_id:
-                                type: 'array'
-                                items:
-                                    type: 'integer'
-                            like_reviews_id:
-                                type: 'array'
-                                items:
-                                    type: 'integer'
+                        $ref: '#/definitions/CurrentUser'
                 422:
                     description: '本登録失敗'
                     schema:
@@ -187,36 +158,7 @@ paths:
                 200:
                     description: 'ログイン成功'
                     schema:
-                        type: 'object'
-                        properties:
-                            id:
-                                type: 'integer'
-                            account_id:
-                                type: 'string'
-                                example: 'guest'
-                            name:
-                                type: 'string'
-                                example: 'GUEST'
-                            follows_id:
-                                type: 'array'
-                                items:
-                                    type: 'integer'
-                            followers_id:
-                                type: 'array'
-                                items:
-                                    type: 'integer'
-                            done_id:
-                                type: 'array'
-                                items:
-                                    type: 'integer'
-                            wanna_id:
-                                type: 'array'
-                                items:
-                                    type: 'integer'
-                            like_reviews_id:
-                                type: 'array'
-                                items:
-                                    type: 'integer'
+                        $ref: '#/definitions/CurrentUser'
                 422:
                     description: 'ログイン失敗'
                     schema:
@@ -553,6 +495,38 @@ definitions:
                 type: 'string'
             updated_at:
                 type: 'string'
+
+    CurrentUser:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            account_id:
+                type: 'string'
+                example: 'guest'
+            name:
+                type: 'string'
+                example: 'GUEST'
+            follows_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+            followers_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+            done_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+            wanna_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+            like_reviews_id:
+                type: 'array'
+                items:
+                    type: 'integer'
 
     ProductDetailWithoutReviews:
         allOf:
