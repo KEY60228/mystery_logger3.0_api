@@ -36,6 +36,17 @@ class ReviewController extends Controller
             'review_comments.user',
         ])->first();
 
+        if (!$review) {
+            return Response::json([
+                'errors' => [
+                    'review_id' => [
+                        '指定されたIDのレビューは存在しません。',
+                    ],
+                ],
+                'message' => 'The given data was invalid.',
+            ], 404);
+        }
+
         return Response::json($review, 200);
     }
 

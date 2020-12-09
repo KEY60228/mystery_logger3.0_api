@@ -312,7 +312,6 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
-
     /reviews/{reviewId}:
         get:
             description: '一レビュー取得'
@@ -327,6 +326,21 @@ paths:
                     description: '取得成功'
                     schema:
                         $ref: '#/definitions/ReviewDetail'
+                404:
+                    description: '取得失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+
         put:
             description: 'レビュー更新'
             parameters:
@@ -592,8 +606,23 @@ definitions:
                 type: 'integer'
             user_id:
                 type: 'integer'
-            product_id:
+            review_id:
                 type: 'integer'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    ReviewComment:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            user_id:
+                type: 'integer'
+            review_id:
+                type: 'integer'
+            contents:
+                type: 'string'
             created_at:
                 type: 'string'
             updated_at:
@@ -681,6 +710,43 @@ definitions:
                                                   properties:
                                                       category:
                                                           $ref: '#/definitions/Category'
+    Review.detail:
+        allOf:
+            -   $ref: '#/definitions/Review'
+            -   type: 'object'
+                properties:
+                    user:
+                        $ref: '#/definitions/User'
+                    product:
+                        allOf:
+                            -   $ref: '#/definitions/Product'
+                            -   type: 'object'
+                                properties:
+                                    category:
+                                        $ref: '#/definitions/Category'
+                                    organizer:
+                                        $ref: '#/definitions/Organizer'
+                                    performances:
+                                        type: 'array'
+                                        items:
+                                            allOf:
+                                                -   $ref: '#/definitions/Performance'
+                                                -   type: 'object'
+                                                    properties:
+                                                        venue:
+                                                            $ref: '#/definitions/Venue'
+                    review_comments:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/ReviewComment'
+                                -   type: 'object'
+                                    properties:
+                                        user:
+                                            $ref: '#/definitions/User'
+
+
+
                     wannas:
                         type: 'array'
                         items:
