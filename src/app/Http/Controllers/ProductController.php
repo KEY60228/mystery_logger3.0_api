@@ -28,6 +28,16 @@ class ProductController extends Controller
             'performances.venue',
             'organizer'
         ])->first();
+
+        if (!$product) {
+            return Response::json([
+                'errors' => [
+                    'product_id' => '指定されたIDの作品はありません。'
+                ],
+                'message' => 'The given data was invalid.',
+            ], 404);
+        }
+
         return Response::json($product, 200);
     }
 }

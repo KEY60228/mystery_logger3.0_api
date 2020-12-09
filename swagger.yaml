@@ -207,7 +207,7 @@ paths:
                 200:
                     description: '取得成功'
                     schema:
-                        $ref: '#/definitions/ProductDetail'
+                        $ref: '#/definitions/Product.detail'
     /users/{userId}:
         get:
             description: '一ユーザー取得'
@@ -541,13 +541,27 @@ definitions:
                         type: 'array'
                         items:
                             allOf:
-                              -   $ref: '#/definitions/Performance'
-                              -   type: 'object'
-                                  properties:
-                                      venue:
-                                          $ref: '#/definitions/Venue'
+                                -   $ref: '#/definitions/Performance'
+                                -   type: 'object'
+                                    properties:
+                                        venue:
+                                            $ref: '#/definitions/Venue'
                     organizer:
                         $ref: '#/definitions/Organizer'
+    Product.detail:
+        allOf:
+            -   $ref: '#/definitions/Product.index'
+            -   type: 'object'
+                properties:
+                    reviews:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/Review'
+                                -   type: 'object'
+                                    properties:
+                                        user:
+                                            $ref: '#/definitions/User'
 
     ProductDetailWithoutReviews:
         allOf:
@@ -560,15 +574,6 @@ definitions:
                             $ref: '#/definitions/PerformanceWithVenue'
                     organizer:
                         $ref: '#/definitions/Organizer'
-    ProductDetail:
-        allOf:
-            -   $ref: '#/definitions/ProductDetailWithoutReviews'
-            -   type: 'object'
-                properties:
-                    reviews:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/ReviewWithUser'
     ReviewWithUser:
         allOf:
             -   $ref: '#/definitions/Review'
