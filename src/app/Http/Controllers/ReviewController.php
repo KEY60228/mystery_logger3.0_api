@@ -64,6 +64,12 @@ class ReviewController extends Controller
             ], 404);
         }
 
+        if ((Integer)$review->user_id !== $request->user()->id) {
+            return Response::json([
+                'message' => '不正な操作です。',
+            ], 422);
+        }
+
         $review->update([
             'contents' => $request->contents,
             'spoil' => $request->spoil,

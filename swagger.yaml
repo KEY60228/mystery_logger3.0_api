@@ -375,6 +375,13 @@ paths:
             responses:
                 200:
                     description: '更新成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
                 404:
                     description: '更新失敗 ID不備'
                     schema:

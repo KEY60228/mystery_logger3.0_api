@@ -37,12 +37,60 @@ class UpdateReviewsApiTest extends TestCase
             'joined_at' => '2020/9/24',
         ];
 
-        $response = $this->json('PUT', route('review.update', [
+        $response = $this->actingAs($this->user)->json('PUT', route('review.update', [
             'reviewId' => $this->review->id,
         ]), $data);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('reviews', $data);
+    }
+
+    /**
+     * @test
+     */
+    public function 不正系_未認証ユーザー()
+    {
+        $data = [
+            'spoil' => true,
+            'contents' => 'めちゃめちゃ面白かった！',
+            'result' => 1,
+            'rating' => 4.5,
+            'joined_at' => '2020/9/24',
+        ];
+
+        $response = $this->json('PUT', route('review.update', [
+            'reviewId' => $this->review->id,
+        ]), $data);
+
+        $response->assertStatus(401)->assertJson([
+            'message' => 'Unauthenticated.',
+        ]);
+        $this->assertDatabaseMissing('reviews', $data);
+    }
+
+    /**
+     * @test
+     */
+    public function 異常系_自分のレビューでない()
+    {
+        $data = [
+            'spoil' => true,
+            'contents' => 'めちゃめちゃ面白かった！',
+            'result' => 1,
+            'rating' => 4.5,
+            'joined_at' => '2020/9/24',
+        ];
+
+        $wrongUser = factory(User::class)->create();
+
+        $response = $this->actingAs($wrongUser)->json('PUT', route('review.update', [
+            'reviewId' => $this->review->id,
+        ]), $data);
+
+        $response->assertStatus(422)->assertJson([
+            'message' => '不正な操作です。',
+        ]);
+        $this->assertDatabaseMissing('reviews', $data);
     }
 
     /**
@@ -58,7 +106,7 @@ class UpdateReviewsApiTest extends TestCase
             'joined_at' => '2020/9/24',
         ];
 
-        $response = $this->json('PUT', route('review.update', [
+        $response = $this->actingAs($this->user)->json('PUT', route('review.update', [
             'reviewId' => 999999,
         ]), $data);
 
@@ -83,7 +131,7 @@ class UpdateReviewsApiTest extends TestCase
             'joined_at' => '2099/12/31',
         ];
 
-        $response = $this->json('PUT', route('review.update', [
+        $response = $this->actingAs($this->user)->json('PUT', route('review.update', [
             'reviewId' => $this->review->id,
         ]), $data);
 
