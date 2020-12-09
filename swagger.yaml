@@ -249,7 +249,6 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
-
     /reviews:
         post:
             description: 'レビュー投稿'
@@ -275,6 +274,45 @@ paths:
             responses:
                 200:
                     description: '投稿成功'
+                422:
+                    description: '投稿失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    user_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    product_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    contents:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    spoil:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    result:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    rating:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    joined_at:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+
     /reviews/{reviewId}:
         get:
             description: '一レビュー取得'

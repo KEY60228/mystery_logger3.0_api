@@ -15,16 +15,12 @@ class ReviewController extends Controller
         $review = Review::create([
             'user_id' => $request->user_id,
             'product_id' => $request->product_id,
+            'spoil' => $request->spoil,
             'contents' => $request->contents,
             'result' => $request->result,
-            'clear_time' => $request->clear_time,
             'rating' => $request->rating,
             'joined_at' => $request->joined_at,
         ]);
-
-        if (is_null($review)) {
-            return Response::json([], 422);
-        }
 
         return Response::json([], 201);
     }
@@ -46,8 +42,8 @@ class ReviewController extends Controller
     public function update(UpdateReviewRequest $request, $id) {
         $review = Review::find($id)->update([
             'contents' => $request->contents,
+            'spoil' => $request->spoil,
             'result' => $request->result,
-            'clear_time' => $request->clear_time,
             'rating' => $request->rating,
             'joined_at' => $request->joined_at,
         ]);
