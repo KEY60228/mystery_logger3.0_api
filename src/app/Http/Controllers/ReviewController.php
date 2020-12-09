@@ -13,7 +13,7 @@ class ReviewController extends Controller
 {
     public function post(PostReviewRequest $request) {
         $review = Review::create([
-            'user_id' => $request->user_id,
+            'user_id' => $request->user()->id,
             'product_id' => $request->product_id,
             'spoil' => $request->spoil,
             'contents' => $request->contents,

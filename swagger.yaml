@@ -274,6 +274,13 @@ paths:
             responses:
                 200:
                     description: '投稿成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
                 422:
                     description: '投稿失敗'
                     schema:
