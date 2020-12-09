@@ -50,17 +50,19 @@ class User extends Authenticatable
         'like_reviews_count',
         'like_reviews_id',
     ];
+
+    protected $with = [];
     
     public function reviews() {
         return $this->hasMany('\App\Models\Review');
     }
 
     public function follows() {
-        return $this->belongsToMany(self::class, "\App\Models\Follow", "following_id", "followed_id");
+        return $this->hasMany("\App\Models\Follow", "following_id");
     }
 
     public function followers() {
-        return $this->belongsToMany(self::class, "\App\Models\Follow", "followed_id", "following_id");
+        return $this->hasMany("\App\Models\Follow", "followed_id");
     }
 
     public function wannas() {
@@ -85,7 +87,7 @@ class User extends Authenticatable
     
     public function getFollowsIdAttribute() {
         $follows_id = [];
-        foreach ($this->follows as $follow) {
+        foreach ($this->follows() as $follow) {
             $follows_id[] = $follow->id;
         }
         return $follows_id;
@@ -97,7 +99,7 @@ class User extends Authenticatable
 
     public function getFollowersIdAttribute() {
         $followers_id = [];
-        foreach ($this->followers as $follower) {
+        foreach ($this->followers() as $follower) {
             $followers_id[] = $follower->id;
         }
         return $followers_id;
@@ -126,7 +128,7 @@ class User extends Authenticatable
 
     public function getDoneIdAttribute() {
         $done_id = [];
-        foreach ($this->reviews as $review) {
+        foreach ($this->reviews() as $review) {
             $done_id[] = $review->product_id;
         }
         return $done_id;
@@ -138,7 +140,7 @@ class User extends Authenticatable
 
     public function getWannaIdAttribute() {
         $wanna_id = [];
-        foreach ($this->wannas as $wanna) {
+        foreach ($this->wannas() as $wanna) {
             $wanna_id[] = $wanna->product_id;
         }
         return $wanna_id;
@@ -150,7 +152,7 @@ class User extends Authenticatable
 
     public function getLikeReviewsIdAttribute() {
         $review_likes_id = [];
-        foreach ($this->review_likes as $review_like) {
+        foreach ($this->review_likes() as $review_like) {
             $review_likes_id[] = $review_like->review_id;
         }
         return $review_likes_id;
