@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\tests\Feature\Review;
+namespace Tests\Feature\Review;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;

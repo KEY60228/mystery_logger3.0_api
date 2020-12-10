@@ -10,7 +10,7 @@ use App\Models\Product;
 use App\Models\Review;
 use App\Models\Category;
 
-class getUserDetailApiTest extends TestCase
+class GetUserDetailApiTest extends TestCase
 {
     use RefreshDatabase;
 

@@ -13,7 +13,7 @@ use App\Models\Category;
 use App\Models\Venue;
 use App\Models\Organizer;
 
-class GetProductDetailApi extends TestCase
+class GetProductDetailApiTest extends TestCase
 {
     use RefreshDatabase;
 

@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Models\Product;
 use App\Models\Review;
 
-class UpdateReviewsApiTest extends TestCase
+class UpdateReviewApiTest extends TestCase
 {
     use RefreshDatabase;
 
