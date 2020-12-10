@@ -7,18 +7,21 @@ use Illuminate\Support\Facades\Response;
 use App\Models\ReviewLike;
 use App\Models\Review;
 use App\Models\User;
+use App\Http\Requests\ReviewLikeRequest;
 
 class ReviewLikeController extends Controller
 {
-    public function like(Request $request) {
+    /**
+     * レビューへのLIKE
+     * 
+     * @param App\Http\Requests\ReviewLikeRequest
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function like(ReviewLikeRequest $request) {
         $like = ReviewLike::create([
-            'user_id' => $request->user_id,
+            'user_id' => $request->user()->id,
             'review_id' => $request->review_id,
         ]);
-
-        if (!$like) {
-            return Response::json([], 422);
-        }
 
         return Response::json([], 201);
     }
