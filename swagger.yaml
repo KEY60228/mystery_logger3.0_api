@@ -560,7 +560,41 @@ paths:
                         $ref: '#/definitions/CurrentUser'
                 204:
                     description: '取得情報なし'
-
+    /wanna:
+        put:
+            description: '「行きたい」登録'
+            parameters:
+                -   in: 'body'
+                    name: 'product_id'
+                    schema:
+                        type: 'object'
+                        properties:
+                            product_id:
+                                type: integer
+            responses:
+                200:
+                    description: '「行きたい」登録成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: '「行きたい」登録失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    product_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
 
 definitions:
     Product:

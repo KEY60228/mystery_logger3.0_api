@@ -5,12 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use App\Models\Wanna;
+use App\Http\Requests\WannaRequest;
 
 class WannaController extends Controller
 {
-    public function wanna(Request $request) {
+    /**
+     * 「行きたい」登録
+     * 
+     * @param App\Http\Requests\WannaRequest
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function wanna(WannaRequest $request) {
         $wanna = Wanna::create([
-            'user_id' => $request->user_id,
+            'user_id' => $request->user()->id,
             'product_id' => $request->product_id,
         ]);
 
