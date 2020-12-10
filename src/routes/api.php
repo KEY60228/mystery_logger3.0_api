@@ -71,7 +71,7 @@ Route::put('/wanna', 'WannaController@wanna')->middleware('auth')->name('wanna')
 Route::delete('/wanna', 'WannaController@unwanna')->middleware('auth')->name('unwanna');
 
 // コメント投稿
-Route::post('/reviews/comments', 'ReviewCommentController@post')->middleware('auth')->name('comment.post');
+Route::post('/comments/review', 'ReviewCommentController@post')->middleware('auth')->name('comment.review.post');
 
 // レビューへのLike
 Route::put('/likes/reviews', 'ReviewLikeController@like')->middleware('auth')->name('like.review');

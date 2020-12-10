@@ -677,6 +677,48 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
+    /comments/review:
+        post:
+            description: 'レビューに対するコメントの投稿'
+            parameters:
+                -   in: 'body'
+                    name: 'review comments'
+                    schema:
+                        type: 'object'
+                        properties:
+                            review_id:
+                                type: 'integer'
+                            contents:
+                                type: 'string'
+            responses:
+                201:
+                    description: 'コメント投稿成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: 'コメント投稿失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    contents:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+
 
 definitions:
     Product:
