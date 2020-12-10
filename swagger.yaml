@@ -550,6 +550,16 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
+    /currentUser:
+        get:
+            description: 'クッキーログイン&ユーザー情報更新'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/CurrentUser'
+                204:
+                    description: '取得情報なし'
 
 
 definitions:

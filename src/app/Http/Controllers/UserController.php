@@ -45,6 +45,12 @@ class UserController extends Controller
         return Response::json($user, 200);
     }
 
+    /**
+     * クッキーログイン & ユーザー情報更新
+     * 
+     * @param Illuminate\Http\Request
+     * @return Illuminate\Support\Facades\Response
+     */
     public function currentuser(Request $request) {
         $user = Auth::user();
 
