@@ -34,6 +34,12 @@ Route::get('/products', 'ProductController@index')->name('product.index');
 // 一作品取得
 Route::get('/products/{id}', 'ProductController@show')->name('product.show');
 
+// クッキーログイン & ユーザー情報更新
+Route::get('/currentuser', 'UserController@currentuser')->name('currentUser');
+
+// ユーザー情報更新
+Route::put('/users', 'UserController@update')->middleware('auth')->name('user.update');
+
 // ユーザー情報取得
 Route::get('/users/{userId}', 'UserController@show')->name('user.show');
 
@@ -58,17 +64,11 @@ Route::put('/follow', 'FollowController@follow')->middleware('auth')->name('foll
 // アンフォロー
 Route::delete('/follow', 'FollowController@unfollow')->middleware('auth')->name('unfollow');
 
-// クッキーログイン & ユーザー情報更新
-Route::get('/currentuser', 'UserController@currentuser')->name('currentUser');
-
 // 「行きたい」登録
 Route::put('/wanna', 'WannaController@wanna')->middleware('auth')->name('wanna');
 
 // 「行きたい」削除
 Route::delete('/wanna', 'WannaController@unwanna')->middleware('auth')->name('unwanna');
-
-// ユーザー情報更新
-Route::put('/users/{userId}', 'UserController@update')->middleware('auth')->name('user.update');
 
 // コメント投稿
 Route::post('/reviews/comments', 'ReviewCommentController@post')->middleware('auth')->name('comment.post');

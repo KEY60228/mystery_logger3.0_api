@@ -221,6 +221,64 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
+    /currentUser:
+        get:
+            description: 'クッキーログイン&ユーザー情報更新'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/CurrentUser'
+                204:
+                    description: '取得情報なし'
+    /users:
+        put:
+            description: 'ユーザー情報編集'
+            parameters:
+                -   in: 'body'
+                    name: 'users'
+                    required: true
+                    schema:
+                        type: 'object'
+                        properties:
+                            name:
+                                type: 'string'
+                            account_id:
+                                type: 'string'
+                            profile:
+                                type: 'string'
+            responses:
+                200:
+                    description: '更新成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: '更新失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    name:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    account_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    profile:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
     /users/{userId}:
         get:
             description: '一ユーザー取得'
@@ -550,16 +608,6 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
-    /currentUser:
-        get:
-            description: 'クッキーログイン&ユーザー情報更新'
-            responses:
-                200:
-                    description: '取得成功'
-                    schema:
-                        $ref: '#/definitions/CurrentUser'
-                204:
-                    description: '取得情報なし'
     /wanna:
         put:
             description: '「行きたい」登録'

@@ -70,12 +70,14 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function update(UpdateUserRequest $request, $id) {
+    /**
+     * ユーザー情報のアップデート
+     * 
+     * @param App\Http\Requests\UpdateUserRequest $request
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function update(UpdateUserRequest $request) {
         $user = Auth::user();
-
-        if (!$user) {
-            return Response::json([], 422);
-        }
 
         $user->update([
             'name' => $request->name,
