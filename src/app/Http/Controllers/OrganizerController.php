@@ -8,6 +8,13 @@ use App\Models\Organizer;
 
 class OrganizerController extends Controller
 {
+    /**
+     * 主催者情報の取得
+     * 
+     * @param Illuminate\Http\Request $request
+     * @param string $id
+     * @return Illuminate\Support\Facades\Response
+     */
     public function show(Request $request, $id) {
         $organizer = Organizer::whereId($id)->with([
             'products',

@@ -843,6 +843,16 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
+    /accompanies:
+        get:
+            description: '同行者募集一覧の取得'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Accompany.index'
 
 definitions:
     Product:
@@ -1101,6 +1111,21 @@ definitions:
                 type: 'string'
             updated_at:
                 type: 'string'
+    Accompany:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            user_id:
+                type: 'integer'
+            performance_id:
+                type: 'integer'
+            contents:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
 
     CurrentUser:
         type: 'object'
@@ -1323,101 +1348,12 @@ definitions:
                                                                         properties:
                                                                             venue:
                                                                                 $ref: '#/definitions/Venue'
-
-
-    ProductDetailWithoutReviews:
+    Accompany.index:
         allOf:
-            -   $ref: '#/definitions/Product'
-            -   type: 'object'
-                properties:
-                    performances:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/PerformanceWithVenue'
-                    organizer:
-                        $ref: '#/definitions/Organizer'
-    ReviewWithUser:
-        allOf:
-            -   $ref: '#/definitions/Review'
+            -   $ref: '#/definitions/Accompany'
             -   type: 'object'
                 properties:
                     user:
                         $ref: '#/definitions/User'
-    PerformanceWithVenue:
-        allOf:
-            -   $ref: '#/definitions/Performance'
-            -   type: 'object'
-                properties:
-                    venue:
-                        $ref: '#/definitions/Venue'
-    UserDetail:
-        allOf:
-            -   $ref: '#/definitions/User'
-            -   type: 'object'
-                properties:
-                    reviews:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/ReviewWithProduct'
-                    follows:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/User'
-                    followers:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/User'
-                    joinedProducts:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/Product'
-                    wannaProducts:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/Product'
-                    likeReviews:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/ReviewDetail'
-    ReviewWithProduct:
-        allOf:
-            -   $ref: '#/definitions/Review'
-            -   type: 'object'
-                properties:
-                    product:
-                        $ref: '#/definitions/Product'
-    ReviewDetail:
-        allOf:
-            -   $ref: '#/definitions/ReviewWithUser'
-            -   $ref: '#/definitions/ReviewWithProduct'
-    OrganizerDetail:
-        allOf:
-            -   $ref: '#/definitions/Organizer'
-            -   type: 'object'
-                properties:
-                    products:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/Product'
-                    venues:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/Venue'
-    VenueDetail:
-        allOf:
-            -   $ref: '#/definitions/Venue'
-            -   type: 'object'
-                properties:
-                    performances:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/PerformanceWithProduct'
-                    organizer:
-                        $ref: '#/definitions/Organizer'
-    PerformanceWithProduct:
-        allOf:
-            -   $ref: '#/definitions/Performance'
-            -   type: 'object'
-                properties:
-                    product:
-                        $ref: '#/definitions/Product'
+                    performance:
+                        $ref: '#/definitions/Performance'
