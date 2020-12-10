@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use App\Models\Wanna;
 use App\Http\Requests\WannaRequest;
+use App\Http\Requests\UnwannaRequest;
 
 class WannaController extends Controller
 {
@@ -24,11 +25,24 @@ class WannaController extends Controller
         return Response::json([], 200);
     }
 
-    public function unwanna(Request $request) {
-        $wanna = Wanna::whereUserId($request->user_id)->whereProductId($request->product_id)->first();
+    /**
+     * 「行きたい」登録解除
+     * 
+     * @param App\Http\Requests\UnwannaRequest
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function unwanna(UnwannaRequest $request) {
+        $wanna = Wanna::whereUserId($request->user()->id)->whereProductId($request->product_id)->first();
 
         if (!$wanna) {
-            return Response::json([], 422);
+            return Response::json([
+                'errors' => [
+                    'product_id' => [
+                        '指定されたproduct idは存在しません。'
+                    ],
+                ],
+                'message' => 'The given data was invalid.'
+            ], 422);
         }
 
         $wanna->delete();

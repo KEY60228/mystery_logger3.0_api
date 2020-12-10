@@ -595,6 +595,40 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
+        delete:
+            description: '「行きたい」登録解除'
+            parameters:
+                -   in: 'body'
+                    name: 'product_id'
+                    schema:
+                        type: 'object'
+                        properties:
+                            product_id:
+                                type: integer
+            responses:
+                204:
+                    description: '「行きたい」登録解除成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: '「行きたい」登録解除失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    product_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
 
 definitions:
     Product:
