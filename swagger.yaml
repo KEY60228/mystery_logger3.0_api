@@ -753,6 +753,42 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
+        delete:
+            description: 'LIKE取り消し'
+            parameters:
+                -   in: 'body'
+                    name: 'review_id'
+                    schema:
+                        type: 'object'
+                        properties:
+                            review_id:
+                                type: integer
+            responses:
+                204:
+                    description: 'LIKE取り消し成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: 'LIKE取り消し失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+
+
 
 definitions:
     Product:

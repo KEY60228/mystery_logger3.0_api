@@ -77,7 +77,7 @@ Route::post('/comments/review', 'ReviewCommentController@post')->middleware('aut
 Route::put('/likes/review', 'ReviewLikeController@like')->middleware('auth')->name('like.review');
 
 // レビューへのLike取り消し
-Route::delete('/likes/reviews', 'ReviewLikeController@unlike')->middleware('auth')->name('unlike.review');
+Route::delete('/likes/review', 'ReviewLikeController@unlike')->middleware('auth')->name('unlike.review');
 
 // 主催者情報の取得
 Route::get('/organizer/{organizerId}', 'OrganizerController@show')->name('organizer.show');
