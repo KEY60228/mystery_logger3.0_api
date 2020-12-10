@@ -37,6 +37,9 @@ Route::get('/products/{id}', 'ProductController@show')->name('product.show');
 // ユーザー情報取得
 Route::get('/users/{userId}', 'UserController@show')->name('user.show');
 
+// タイムライン取得
+Route::get('/reviews', 'ReviewController@index')->middleware('auth')->name('review.timeline');
+
 // レビュー登録
 Route::post('/reviews', 'ReviewController@post')->middleware('auth')->name('review.post');
 
@@ -48,9 +51,6 @@ Route::put('/reviews/{reviewId}', 'ReviewController@update')->middleware('auth')
 
 // レビュー削除
 Route::delete('/reviews/{reviewId}', 'ReviewController@delete')->middleware('auth')->name('review.delete');
-
-// タイムライン取得
-Route::get('/reviews', 'ReviewController@index')->middleware('auth')->name('review.timeline');
 
 // フォロー
 Route::put('/follow', 'FollowController@follow')->middleware('auth')->name('follow');

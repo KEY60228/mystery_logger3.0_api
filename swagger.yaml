@@ -481,6 +481,43 @@ paths:
                         properties:
                             message:
                                 type: 'string'
+    /follow:
+        put:
+            description: 'フォロー'
+            parameters:
+                -   in: 'body'
+                    name: 'followed_id'
+                    schema:
+                        type: 'object'
+                        properties:
+                            followed_id:
+                                type: integer
+            responses:
+                200:
+                    description: 'フォロー成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: 'フォロー失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    followed_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+
+
 
 definitions:
     Product:
