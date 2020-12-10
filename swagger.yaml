@@ -787,8 +787,34 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
-
-
+    /organizer/{organizerId}:
+        get:
+            description: '主催者情報の取得'
+            parameters:
+                -   in: 'path'
+                    name: 'organizerId'
+                    description: '主催者ID'
+                    required: true
+                    type: 'string'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/Organizer.detail'
+                404:
+                    description: '取得失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    organizer_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
 
 definitions:
     Product:
@@ -1208,6 +1234,37 @@ definitions:
                                                           $ref: '#/definitions/User'
                                                       product:
                                                           $ref: '#/definitions/Product'
+    Organizer.detail:
+        allOf:
+            -   $ref: '#/definitions/Organizer'
+            -   type: 'object'
+                properties:
+                    products:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/Product'
+                                -   type: 'object'
+                                    properties:
+                                        category:
+                                            $ref: '#/definitions/Category'
+                                        organizer:
+                                            $ref: '#/definitions/Organizer'
+                                        performances:
+                                            type: 'array'
+                                            items:
+                                                allOf:
+                                                    -   $ref: '#/definitions/Performance'
+                                                    -   type: 'object'
+                                                        properties:
+                                                            venue:
+                                                                $ref: '#/definitions/Venue'
+                    venues:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Venue'
+
+
 
     ProductDetailWithoutReviews:
         allOf:

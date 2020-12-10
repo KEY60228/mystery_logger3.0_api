@@ -19,7 +19,14 @@ class OrganizerController extends Controller
         ])->first();
 
         if (!$organizer) {
-            return Response::json([], 422);
+            return Response::json([
+                'errors' => [
+                    'organizer_id' => [
+                        '指定されたorganizer idは存在しません。'
+                    ],
+                ],
+                'message' => 'The given data was invalid.'
+            ], 404);
         }
 
         return Response::json($organizer, 200);
