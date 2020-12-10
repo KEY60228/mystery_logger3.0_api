@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Response;
 use App\Models\Follow;
 use App\Models\User;
 use App\Http\Requests\FollowRequest;
+use App\Http\Requests\UnfollowRequest;
 
 class FollowController extends Controller
 {
@@ -25,11 +26,24 @@ class FollowController extends Controller
         return Response::json([], 200);
     }
 
-    public function unfollow(Request $request) {
-        $follow = Follow::whereFollowingId($request->following_id)->whereFollowedId($request->followed_id)->first();
+    /**
+     * フォロー解除
+     * 
+     * @param App\Http\Requests\UnfollowRequest $request
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function unfollow(UnfollowRequest $request) {
+        $follow = Follow::whereFollowingId($request->user()->id)->whereFollowedId($request->followed_id)->first();
 
         if (!$follow) {
-            return Response::json([], 422);
+            return Response::json([
+                'errors' => [
+                    'followed_id' => [
+                        '指定されたfollowed idは存在しません。',
+                    ],
+                ],
+                'message' => 'The given data was invalid.',
+            ], 422);
         }
 
         $follow->delete();

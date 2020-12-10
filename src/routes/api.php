@@ -56,7 +56,7 @@ Route::delete('/reviews/{reviewId}', 'ReviewController@delete')->middleware('aut
 Route::put('/follow', 'FollowController@follow')->middleware('auth')->name('follow');
 
 // アンフォロー
-Route::delete('/unfollow', 'FollowController@unfollow')->middleware('auth')->name('unfollow');
+Route::delete('/follow', 'FollowController@unfollow')->middleware('auth')->name('unfollow');
 
 // クッキーログイン & ユーザー情報更新
 Route::get('/currentuser', 'UserController@currentuser')->name('currentUser');

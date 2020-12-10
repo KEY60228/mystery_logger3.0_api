@@ -516,7 +516,40 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
-
+        delete:
+            description: 'フォロー解除'
+            parameters:
+                -   in: 'body'
+                    name: 'followed_id'
+                    schema:
+                        type: 'object'
+                        properties:
+                            followed_id:
+                                type: integer
+            responses:
+                204:
+                    description: 'フォロー解除成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: 'フォロー解除失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    followed_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
 
 
 definitions:
