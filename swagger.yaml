@@ -250,6 +250,22 @@ paths:
                             message:
                                 type: 'string'
     /reviews:
+        get:
+            description: 'タイムライン取得'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Review.index'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
         post:
             description: 'レビュー投稿'
             parameters:
@@ -840,7 +856,15 @@ definitions:
                                     properties:
                                         user:
                                             $ref: '#/definitions/User'
-
+    Review.index:
+        allOf:
+            -   $ref: '#/definitions/Review'
+            -   type: 'object'
+                properties:
+                    product:
+                        $ref: '#/definitions/Product'
+                    user:
+                        $ref: '#/definitions/User'
 
 
                     wannas:

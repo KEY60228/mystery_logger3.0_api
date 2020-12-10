@@ -133,13 +133,24 @@ class ReviewController extends Controller
         return Response::json([], 204);
     }
 
+    /**
+     * タイムライン
+     * 
+     * @param Illuminate\Http\Request
+     * @return Illuminate\Support\Facades\Response
+     */
     public function index(Request $request) {
-        $user = User::find($request->user_id);
-        $userId = $user->id;
-        $followsId = $user->follows_id;
-        $followsId[] = $userId;
+        $user_reviews = Review::where('user_id', $request->user()->id)->with([
+            'product',
+            'user',
+        ])->get();
+            
+        $follows_reviews = Review::whereIn('user_id', $request->user()->follows_id)->with([
+            'product',
+            'user',
+        ])->get();
 
-        $timeline = Review::whereIn('user_id', $followsId)->with(['product', 'user'])->orderBy('created_at', 'desc')->get();
+        $timeline = $user_reviews->merge($follows_reviews)->sortByDesc('created_at');
 
         return Response::json($timeline, 200);
     }
