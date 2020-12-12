@@ -150,7 +150,7 @@ class ReviewController extends Controller
             'user',
         ])->get();
 
-        $timeline = $user_reviews->merge($follows_reviews)->sortByDesc('created_at');
+        $timeline = $user_reviews->merge($follows_reviews)->sortByDesc('created_at')->values()->all();
 
         return Response::json($timeline, 200);
     }

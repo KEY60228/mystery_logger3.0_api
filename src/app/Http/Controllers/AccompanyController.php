@@ -18,6 +18,8 @@ class AccompanyController extends Controller
         $accompanies = Accompany::with([
             'user',
             'performance',
+            'performance.product',
+            'performance.venue',
         ])->get();
 
         return Response::json($accompanies, 200);

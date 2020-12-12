@@ -221,7 +221,7 @@ paths:
                                             type: 'string'
                             message:
                                 type: 'string'
-    /currentUser:
+    /currentuser:
         get:
             description: 'クッキーログイン&ユーザー情報更新'
             responses:
@@ -333,17 +333,17 @@ paths:
                     schema:
                         type: 'object'
                         properties:
-                            user_id:
-                                type: 'string'
                             product_id:
                                 type: 'string'
-                            contents:
-                                type: 'string'
+                            spoil:
+                                type: 'boolean'
+                            rating:
+                                type: 'integer'
                             result:
                                 type: 'integer'
-                            clear_time:
-                                type: 'string'
                             joined_at:
+                                type: 'string'
+                            contents:
                                 type: 'string'
             responses:
                 200:
@@ -406,7 +406,7 @@ paths:
                 200:
                     description: '取得成功'
                     schema:
-                        $ref: '#/definitions/ReviewDetail'
+                        $ref: '#/definitions/Review.detail'
                 404:
                     description: '取得失敗'
                     schema:
@@ -434,17 +434,15 @@ paths:
                     schema:
                         type: 'object'
                         properties:
-                            user_id:
-                                type: 'string'
-                            product_id:
-                                type: 'string'
-                            contents:
-                                type: 'string'
+                            spoil:
+                                type: 'boolean'
+                            rating:
+                                type: 'integer'
                             result:
                                 type: 'integer'
-                            clear_time:
-                                type: 'string'
                             joined_at:
+                                type: 'string'
+                            contents:
                                 type: 'string'
             responses:
                 200:
@@ -917,36 +915,16 @@ definitions:
                 type: 'string'
             follows_count:
                 type: 'integer'
-            follows_id:
-                type: 'array'
-                items:
-                    type: 'integer'
             followers_count:
                 type: 'integer'
-            followers_id:
-                type: 'array'
-                items:
-                    type: 'integer'
             success_rate:
                 type: 'integer'
             reviews_count:
                 type: 'integer'
-            done_id:
-                type: 'array'
-                items:
-                    type: 'integer'
             wannas_count:
                 type: 'integer'
-            wanna_id:
-                type: 'array'
-                items:
-                    type: 'integer'
             like_reviews_count:
                 type: 'integer'
-            like_reviews_id:
-                type: 'array'
-                items:
-                    type: 'integer'
     Review:
         type: 'object'
         properties:
@@ -1209,6 +1187,39 @@ definitions:
                                                   properties:
                                                       category:
                                                           $ref: '#/definitions/Category'
+                    wannas:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/Wanna'
+                                -   type: 'object'
+                                    properties:
+                                        product:
+                                            $ref: '#/definitions/Product'
+                    follows:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/User'
+                    followers:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/User'
+                    review_likes:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/ReviewLike'
+                                -   type: 'object'
+                                    properties:
+                                        review:
+                                            allOf:
+                                                -   $ref: '#/definitions/Review'
+                                                -   type: 'object'
+                                                    properties:
+                                                        user:
+                                                            $ref: '#/definitions/User'
+                                                        product:
+                                                            $ref: '#/definitions/Product'
     Review.detail:
         allOf:
             -   $ref: '#/definitions/Review'
@@ -1252,41 +1263,6 @@ definitions:
                         $ref: '#/definitions/Product'
                     user:
                         $ref: '#/definitions/User'
-
-
-                    wannas:
-                        type: 'array'
-                        items:
-                            allOf:
-                                -   $ref: '#/definitions/Wanna'
-                                -   type: 'object'
-                                    properties:
-                                        product:
-                                            $ref: '#/definitions/Product'
-                    follows:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/User'
-                    followers:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/User'
-                    review_likes:
-                        type: 'array'
-                        items:
-                            allOf:
-                              -   $ref: '#/definitions/ReviewLike'
-                              -   type: 'object'
-                                  properties:
-                                      review:
-                                          allOf:
-                                              -   $ref: '#/definitions/Review'
-                                              -   type: 'object'
-                                                  properties:
-                                                      user:
-                                                          $ref: '#/definitions/User'
-                                                      product:
-                                                          $ref: '#/definitions/Product'
     Organizer.detail:
         allOf:
             -   $ref: '#/definitions/Organizer'
@@ -1356,4 +1332,11 @@ definitions:
                     user:
                         $ref: '#/definitions/User'
                     performance:
-                        $ref: '#/definitions/Performance'
+                        allOf:
+                            -   $ref: '#/definitions/Performance'
+                            -   type: 'object'
+                                properties:
+                                    venue:
+                                        $ref: '#/definitions/Venue'
+                                    product:
+                                        $ref: '#/definitions/Product'
