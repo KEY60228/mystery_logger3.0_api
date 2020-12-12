@@ -22,7 +22,7 @@ class EmailVerification extends Mailable
      */
     public function __construct(PreRegister $preregister)
     {
-      $this->preregister = $preregister;
+        $this->preregister = $preregister;
     }
 
     /**
@@ -32,12 +32,12 @@ class EmailVerification extends Mailable
      */
     public function build()
     {
-      return $this->subject('【なぞログ】仮登録が完了しました')
-                  ->text('emails.preregister')
-                  ->with([
-                    'email' => $this->preregister->email,
-                    'token' => $this->preregister->token,
-                    'expiration_time' => $this->preregister->expiration_time,
-                  ]);
+        return $this->subject('【なぞログ】仮登録が完了しました')
+                    ->text('emails.preregister')
+                    ->with([
+                        'email' => $this->preregister->email,
+                        'token' => $this->preregister->token,
+                        'expiration_time' => $this->preregister->expiration_time,
+                    ]);
     }
 }

@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CreateUsersTable extends Migration
 {
@@ -14,19 +15,23 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('account_id');
-            $table->string('name');
-            $table->string('profile')->nullable();
-            $table->string('email')->unique();
+            $table->bigIncrements('id')->comment('代理キー');
+            $table->integer('pre_register_id')->comment('仮登録ID');
+            $table->string('account_id')->unique()->comment('アカウントID');
+            $table->string('name')->comment('アカウントネーム');
+            $table->string('profile')->nullable()->comment('プロフィール文');
+            $table->string('email')->unique()->comment('メールアドレス');
             $table->timestamp('email_verified_at')->nullable();
-            $table->integer('pre_register_id');
-            $table->string('password');
-            $table->string('image_name')->default('default.jpeg');
+            $table->string('password')->comment('パスワード');
+            $table->string('image_name')->default('default.jpeg')->comment('ユーザー画像');
             $table->rememberToken();
+            $table->softDeletes();
+            $table->boolean('exist')->nullable()->generatedAs('case when deleted_at is null then 1 else null end')->comment('論理削除確認 1:未削除 null:削除済');
             $table->timestamps();
             $table->foreign('pre_register_id')->references('id')->on('pre_registers');
         });
+
+        // DB::statement("COMMENT ON TABLE users IS 'ユーザーテーブル';");
     }
 
     /**

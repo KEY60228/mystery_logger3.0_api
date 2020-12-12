@@ -26,11 +26,11 @@ class UpdateReviewRequest extends FormRequest
         $today = date('Y-m-d');
 
         return [
-          'contents' => ['required', 'max:255', 'string'],
-          'result' => ['required', 'between:0,2', 'integer'],
-          'clear_time' => ['integer', 'nullable'],
-          'rating' => ['between:1,5', 'nullable'],
-          'joined_at' => ['date', 'before_or_equal:' . $today, 'nullable'],
+            'contents' => ['max:255', 'string'],
+            'spoil' => ['required', 'boolean'],
+            'result' => ['required', 'between:0,2', 'integer'],
+            'rating' => ['required', 'between:0,5'],
+            'joined_at' => ['date', 'before_or_equal:' . $today, 'nullable'],
         ];
     }
 }

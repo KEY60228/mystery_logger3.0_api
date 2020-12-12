@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Venue;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -9,6 +9,7 @@ use App\Models\Organizer;
 use App\Models\Venue;
 use App\Models\Performance;
 use App\Models\Product;
+use App\Models\Category;
 
 class GetVenueApiTest extends TestCase
 {
@@ -18,6 +19,7 @@ class GetVenueApiTest extends TestCase
     {
         parent::setUp();
         $this->organizer = factory(Organizer::class)->create();
+        $this->category = factory(Category::class)->create();
         $this->venue = factory(Venue::class)->create([
             'organizer_id' => $this->organizer->id,
         ]);
@@ -46,8 +48,37 @@ class GetVenueApiTest extends TestCase
                 'id' => $this->performance->id,
                 'product' => [
                     'id' => $this->product->id,
-                ]
+                    'category' => [
+                        'id' => $this->category->id,
+                    ],
+                    'organizer' => [
+                        'id' => $this->organizer->id,
+                    ],
+                    'performances' => [[
+                        'id' => $this->performance->id,
+                        'venue' => [
+                            'id' => $this->venue->id,
+                        ],
+                    ]],
+                    ],
             ]],
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function 異常系_存在しない主催者ID()
+    {
+        $response = $this->json('GET', route('venue.show', 999999));
+
+        $response->assertStatus(404)->assertJson([
+            'errors' => [
+                'venue_id' => [
+                    '指定されたvenue idは存在しません。'
+                ],
+            ],
+            'message' => 'The given data was invalid.'
         ]);
     }
 }

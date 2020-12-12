@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\User;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -29,13 +29,16 @@ class GetCurrentUserApiTest extends TestCase
             'name' => $this->user->name,
             'follows_id' => $this->user->follows_id,
             'followers_id' => $this->user->followers_id,
+            'done_id' => $this->user->done_id,
+            'wanna_id' => $this->user->wanna_id,
+            'like_reviews_id' => $this->user->like_reviews_id,
         ]);
     }
 
     /**
      * @test
      */
-    public function クッキーなし()
+    public function 正常系_クッキーなし()
     {
         $response = $this->json('GET', route('currentUser'));
 

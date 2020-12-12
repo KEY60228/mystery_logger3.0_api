@@ -26,45 +26,40 @@ class PostReviewApiTest extends TestCase
     public function 正常系()
     {
         $data = [
-            'user_id' => $this->user->id,
             'product_id' => $this->product->id,
+            'spoil' => true,
             'contents' => 'めちゃめちゃ面白かった！',
             'result' => 1,
-            'clear_time' => 165,
             'rating' => 4.5,
             'joined_at' => '2020/9/24',
         ];
 
-        $response = $this->json('POST', route('review.post'), $data);
-
-        $review = Review::first();
+        $response = $this->actingAs($this->user)->json('POST', route('review.post'), $data);
 
         $response->assertStatus(201);
-        $this->assertEquals($data['user_id'], $review->user_id);
-        $this->assertEquals($data['contents'], $review->contents);
+        $this->assertDatabaseHas('reviews', $data);
     }
 
     /**
      * @test
      */
-    public function 不正系_不正なユーザーID()
+    public function 不正系_未認証ユーザー()
     {
         $data = [
-            'user_id' => 2316,
             'product_id' => $this->product->id,
+            'spoil' => true,
             'contents' => '面白かった',
             'result' => 1,
-            'clear_time' => 165,
             'rating' => 4.5,
             'joined_at' => '2020/9/20'
         ];
-        
+
         $response = $this->json('POST', route('review.post'), $data);
-    
-        $review = Review::first();
-    
-        $response->assertStatus(422);
-        $this->assertNull($review);
+
+        $response->assertStatus(401)->assertJson([
+            'message' => 'Unauthenticated.',
+        ]);
+        $this->assertDatabaseMissing('reviews', $data);
     }
 
     /**
@@ -73,21 +68,27 @@ class PostReviewApiTest extends TestCase
     public function 不正系_不正な作品ID()
     {
         $data = [
-            'user_id' => $this->user->id,
-            'product_id' => 2123,
+            'product_id' => 999999,
+            'spoil' => true,
             'contents' => '面白かった',
             'result' => 1,
-            'clear_time' => 165,
             'rating' => 4.5,
             'joined_at' => '2020/9/20'
         ];
         
-        $response = $this->json('POST', route('review.post'), $data);
+        $response = $this->actingAs($this->user)->json('POST', route('review.post'), $data);
     
         $review = Review::first();
     
-        $response->assertStatus(422);
-        $this->assertNull($review);
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'product_id' => [
+                    '指定されたproduct idは存在しません。',
+                ],
+            ],
+            'message' => 'The given data was invalid.',
+        ]);
+        $this->assertDatabaseMissing('reviews', $data);
     }
 
     /**
@@ -96,21 +97,27 @@ class PostReviewApiTest extends TestCase
     public function 不正系_不正なresult()
     {
         $data = [
-            'user_id' => $this->user->id,
             'product_id' => $this->product->id,
+            'spoil' => true,
             'contents' => '面白かった',
             'result' => 5,
-            'clear_time' => 165,
             'rating' => 4.5,
             'joined_at' => '2020/9/20'
         ];
         
-        $response = $this->json('POST', route('review.post'), $data);
+        $response = $this->actingAs($this->user)->json('POST', route('review.post'), $data);
     
         $review = Review::first();
     
-        $response->assertStatus(422);
-        $this->assertNull($review);
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'result' => [
+                    'resultには0〜2までの数値を指定してください。',
+                ],
+            ],
+            'message' => 'The given data was invalid.',
+        ]);
+        $this->assertDatabaseMissing('reviews', $data);
     }
 
     /**
@@ -119,21 +126,27 @@ class PostReviewApiTest extends TestCase
     public function 不正系_未来のjoined_at()
     {
         $data = [
-            'user_id' => $this->user->id,
             'product_id' => $this->product->id,
+            'spoil' => true,
             'contents' => '面白かった',
             'result' => 1,
-            'clear_time' => 165,
             'rating' => 4.5,
-            'joined_at' => '2030/10/20'
+            'joined_at' => '2099/12/31'
         ];
         
-        $response = $this->json('POST', route('review.post'), $data);
+        $response = $this->actingAs($this->user)->json('POST', route('review.post'), $data);
     
         $review = Review::first();
     
-        $response->assertStatus(422);
-        $this->assertNull($review);
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'joined_at' => [
+                    
+                ],
+            ],
+            'message' => 'The given data was invalid.',
+        ]);
+        $this->assertDatabaseMissing('reviews', $data);
     }
 
     /**
@@ -144,17 +157,28 @@ class PostReviewApiTest extends TestCase
         Review::create([
             'user_id' => $this->user->id,
             'product_id' => $this->product->id,
+            'spoil' => true,
             'result' => 1,
+            'rating' => 1,
         ]);
 
         $data = [
-            'user_id' => $this->user->id,
             'product_id' => $this->product->id,
+            'spoil' => true,
             'result' => 2,
+            'rating' => 1,
         ];
 
-        $response = $this->json('POST', route('review.post'), $data);
+        $response = $this->actingAs($this->user)->json('POST', route('review.post'), $data);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'product_id' => [
+                    
+                ],
+            ],
+            'message' => 'The given data was invalid.',
+        ]);
+        $this->assertDatabaseMissing('reviews', $data);
     }
 }

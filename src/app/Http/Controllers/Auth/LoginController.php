@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -40,6 +42,13 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    /**
+     * 認証後動作
+     * 
+     * @param \Illuminate\Http\Request  $request
+     * @param mixed  $user
+     * @return \Illuminate\Support\Facades\Response
+     */
     public function authenticated(Request $request, $user)
     {
         return Response::json([
@@ -54,8 +63,29 @@ class LoginController extends Controller
         ], 200);
     }
 
+    /**
+     * ログアウト後挙動
+     * 
+     * @param \Illuminate\Http\Request  $request
+     * @return \Illuminate\Support\Facades\Response
+     */
     protected function loggedOut(Request $request)
     {
         return Response::json([], 200);
+    }
+
+    /**
+     * AuthenticateUsersのsendFailedLoginResponseのオーバーライド
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        throw ValidationException::withMessages([
+            $this->username() => [trans('認証に失敗しました。')],
+        ]);
     }
 }

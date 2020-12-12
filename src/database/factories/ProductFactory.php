@@ -7,14 +7,16 @@ use Faker\Generator as Faker;
 
 $factory->define(Product::class, function (Faker $faker) {
     return [
-      'name' => $faker->word,
-      'contents' => $faker->sentence,
-      'image_name' => $faker->text,
-      'limitTime' => $faker->randomDigitNotNull,
-      'requiredTime' => $faker->randomDigitNotNull,
-      'minParty' => $faker->randomDigitNotNull,
-      'maxParty' => $faker->randomDigitNotNull,
-      'organizer_id' => 1,
-      'category_id' => 1,
+        'organizer_id' => 1,
+        'category_id' => 1,
+        'name' => $faker->word,
+        'kana_name' => $faker->word,
+        'phrase' => $faker->sentence,
+        'website' => $faker->url,
+        'image_name' => $faker->text,
+        'limitTime' => $faker->randomDigitNotNull,
+        'requiredTime' => $faker->randomDigitNotNull,
+        'minParty' => $faker->randomDigitNotNull,
+        'maxParty' => $faker->randomDigitNotNull,
     ];
 });

@@ -12,6 +12,13 @@ use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
+    /**
+     * ユーザー詳細
+     * 
+     * @param Illuminate\Http\Request
+     * @param string $id
+     * @return Illuminate\Support\Facades\Response
+     */
     public function show(Request $request, $id) {
         $user = User::whereAccountId($id)->with([
             'reviews',
@@ -24,20 +31,26 @@ class UserController extends Controller
             'review_likes.review',
             'review_likes.review.user',
             'review_likes.review.product',
-        ])->withCount([
-            'follows',
-            'followers',
-            'wannas'
         ])->first();
 
-        if (is_null($user)) {
-            // エラーハンドリング
-            return Response::json([], 422);
+        if (!$user) {
+            return Response::json([
+                'errors' => [
+                    'account_id' => '指定されたアカウントIDのユーザーはいません。',
+                ],
+                'messages' => 'The given data was invalid.',
+            ], 404);
         }
-
+        
         return Response::json($user, 200);
     }
 
+    /**
+     * クッキーログイン & ユーザー情報更新
+     * 
+     * @param Illuminate\Http\Request
+     * @return Illuminate\Support\Facades\Response
+     */
     public function currentuser(Request $request) {
         $user = Auth::user();
 
@@ -57,12 +70,14 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function update(UpdateUserRequest $request, $id) {
+    /**
+     * ユーザー情報のアップデート
+     * 
+     * @param App\Http\Requests\UpdateUserRequest $request
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function update(UpdateUserRequest $request) {
         $user = Auth::user();
-
-        if (!$user) {
-            return Response::json([], 422);
-        }
 
         $user->update([
             'name' => $request->name,

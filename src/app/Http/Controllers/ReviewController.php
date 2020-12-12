@@ -11,24 +11,33 @@ use App\Models\User;
 
 class ReviewController extends Controller
 {
+    /**
+     * レビュー投稿
+     * 
+     * @param App\Http\Requests\PostReviewRequest
+     * @return Illuminate\Support\Facades\Response
+     */
     public function post(PostReviewRequest $request) {
         $review = Review::create([
-            'user_id' => $request->user_id,
+            'user_id' => $request->user()->id,
             'product_id' => $request->product_id,
+            'spoil' => $request->spoil,
             'contents' => $request->contents,
             'result' => $request->result,
-            'clear_time' => $request->clear_time,
             'rating' => $request->rating,
             'joined_at' => $request->joined_at,
         ]);
 
-        if (is_null($review)) {
-            return Response::json([], 422);
-        }
-
         return Response::json([], 201);
     }
 
+    /**
+     * レビュー詳細
+     * 
+     * @param Illuminate\Http\Request
+     * @param string $id
+     * @return Illuminate\Support\Facades\Response
+     */
     public function show(Request $request, $id) {
         $review = Review::whereId($id)->with([
             'user',
@@ -40,14 +49,51 @@ class ReviewController extends Controller
             'review_comments.user',
         ])->first();
 
+        if (!$review) {
+            return Response::json([
+                'errors' => [
+                    'review_id' => [
+                        '指定されたIDのレビューは存在しません。',
+                    ],
+                ],
+                'message' => 'The given data was invalid.',
+            ], 404);
+        }
+
         return Response::json($review, 200);
     }
 
+    /**
+     * レビュー更新
+     * 
+     * @param App\Http\Requests\UpdateReviewRequest
+     * @param string $id
+     * @return Illuminate\Support\Facades\Response
+     */
     public function update(UpdateReviewRequest $request, $id) {
-        $review = Review::find($id)->update([
+        $review = Review::find($id);
+
+        if (!$review) {
+            return Response::json([
+                'errors' => [
+                    'review_id' => [
+                        '指定されたIDのレビューは存在しません。',
+                    ],
+                ],
+                'message' => 'The given data was invalid.',
+            ], 404);
+        }
+
+        if ((Integer)$review->user_id !== $request->user()->id) {
+            return Response::json([
+                'message' => '不正な操作です。',
+            ], 422);
+        }
+
+        $review->update([
             'contents' => $request->contents,
+            'spoil' => $request->spoil,
             'result' => $request->result,
-            'clear_time' => $request->clear_time,
             'rating' => $request->rating,
             'joined_at' => $request->joined_at,
         ]);
@@ -55,19 +101,56 @@ class ReviewController extends Controller
         return Response::json([], 200);
     }
 
+    /**
+     * レビュー削除
+     * 
+     * @param Illuminate\Http\Request
+     * @param string $id
+     * @return Illuminate\Support\Facades\Response
+     */
     public function delete(Request $request, $id) {
-        Review::find($id)->delete();
+        $review = Review::find($id);
+
+        if (!$review) {
+            return Response::json([
+                'errors' => [
+                    'review_id' => [
+                        '指定されたIDのレビューは存在しません。',
+                    ],
+                ],
+                'message' => 'The given data was invalid.',
+            ], 404);
+        }
+
+        if ((Integer)$review->user_id !== $request->user()->id) {
+            return Response::json([
+                'message' => '不正な操作です。',
+            ], 422);
+        }
+
+        $review->delete();
 
         return Response::json([], 204);
     }
 
+    /**
+     * タイムライン
+     * 
+     * @param Illuminate\Http\Request
+     * @return Illuminate\Support\Facades\Response
+     */
     public function index(Request $request) {
-        $user = User::find($request->user_id);
-        $userId = $user->id;
-        $followsId = $user->follows_id;
-        $followsId[] = $userId;
+        $user_reviews = Review::where('user_id', $request->user()->id)->with([
+            'product',
+            'user',
+        ])->get();
+            
+        $follows_reviews = Review::whereIn('user_id', $request->user()->follows_id)->with([
+            'product',
+            'user',
+        ])->get();
 
-        $timeline = Review::whereIn('user_id', $followsId)->with(['product', 'user'])->orderBy('created_at', 'desc')->get();
+        $timeline = $user_reviews->merge($follows_reviews)->sortByDesc('created_at')->values()->all();
 
         return Response::json($timeline, 200);
     }

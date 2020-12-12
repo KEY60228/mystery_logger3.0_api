@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class PostReviewRequest extends FormRequest
 {
@@ -27,19 +28,18 @@ class PostReviewRequest extends FormRequest
         $today = date('Y-m-d');
 
         return [
-            'user_id' => ['required', 'integer', 'exists:App\Models\User,id'],
             'product_id' => [
                 'required',
                 'integer',
                 'exists:App\Models\Product,id',
                 Rule::unique('reviews')->ignore($this->input('id'))->where(function($query) {
-                    $query->where('user_id', $this->input('user_id'))->whereNull('deleted_at');
+                    $query->where('user_id', Auth::id())->whereNull('deleted_at');
                 }),
             ],
             'contents' => ['max:255', 'string'],
+            'spoil' => ['required', 'boolean'],
             'result' => ['required', 'between:0,2', 'integer'],
-            'clear_time' => ['integer', 'nullable'],
-            'rating' => ['between:1,5', 'nullable'],
+            'rating' => ['required', 'between:0,5'],
             'joined_at' => ['date', 'before_or_equal:' . $today, 'nullable'],
         ];
     }

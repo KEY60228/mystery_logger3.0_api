@@ -9,16 +9,29 @@ use App\Models\Review;
 
 class ProductController extends Controller
 {
+    /**
+     * 作品一覧
+     * 
+     * @param Illuminate\Http\Request
+     * @return Illuminate\Support\Facades\Response
+     */
     public function index(Request $request) {
         $products = Product::with([
             'category',
             'performances',
             'performances.venue',
             'organizer'
-        ])->withCount('wannas')->get();
+        ])->get();
         return Response::json($products, 200);
     }
 
+    /**
+     * 作品詳細
+     * 
+     * @param Illuminate\Http\Request
+     * @param string $id
+     * @return Illuminate\Support\Facades\Response
+     */
     public function show(Request $request, $id) {
         $product = Product::whereId($id)->with([
             'reviews',
@@ -27,7 +40,17 @@ class ProductController extends Controller
             'performances',
             'performances.venue',
             'organizer'
-        ])->withCount('wannas')->first();
+        ])->first();
+
+        if (!$product) {
+            return Response::json([
+                'errors' => [
+                    'product_id' => '指定されたIDの作品はありません。'
+                ],
+                'message' => 'The given data was invalid.',
+            ], 404);
+        }
+
         return Response::json($product, 200);
     }
 }

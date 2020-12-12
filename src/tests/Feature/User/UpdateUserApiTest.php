@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\User;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -15,7 +15,6 @@ class UpdateUserApiTest extends TestCase
     {
         parent::setUp();
         $this->user = factory(User::class)->create();
-        $this->user2 = factory(User::class)->create();
     }
 
     /**
@@ -23,31 +22,67 @@ class UpdateUserApiTest extends TestCase
      */
     public function 正常系()
     {
-        $response = $this->actingAs($this->user)->json('PUT', route('user.update', $this->user->id), [
-            'name' => $this->user->name,
-            'account_id' => $this->user->account_id,
-            'profile' => $this->user->profile,
+        $response = $this->actingAs($this->user)->json('PUT', route('user.update'), [
+            'name' => 'guest',
+            'account_id' => 'GUEST',
+            'profile' => 'よろです！！',
         ]);
 
-        $user = User::find($this->user->id);
-
         $response->assertStatus(200);
-        $this->assertEquals($this->user->name, $user->name);
+        $this->assertDatabaseHas('users', [
+            'name' => 'guest',
+            'account_id' => 'GUEST',
+            'profile' => 'よろです！！',
+        ]);
     }
-    
+
+    /**
+     * @test
+     */
+    public function 異常系_未認証ユーザー()
+    {
+        $response = $this->json('PUT', route('user.update'), [
+            'name' => 'guest',
+            'account_id' => 'GUEST',
+            'profile' => 'よろです！！',
+            ]);
+            
+        $response->assertStatus(401)->assertJson([
+            'message' => 'Unauthenticated.'
+        ]);
+        $this->assertDatabaseMissing('users', [
+            'name' => 'guest',
+            'account_id' => 'GUEST',
+            'profile' => 'よろです！！',
+        ]);
+    }
+
     /**
      * @test
      */
     public function 異常系_AccountIDの重複()
     {
-        $response = $this->actingAs($this->user2)->json('PUT', route('user.update', $this->user2->id), [
-            'name' => $this->user2->name,
-            'account_id' => $this->user->account_id, // 重複
-            'profile' => $this->user2->profile,
+        $wrongUser = factory(User::class)->create();
+
+        $response = $this->actingAs($this->user)->json('PUT', route('user.update'), [
+            'name' => 'guest',
+            'account_id' => $wrongUser->account_id,
+            'profile' => 'よろです！！',
         ]);
-    
-        $user2 = User::find($this->user2->id);
-    
-        $response->assertStatus(422);
+
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'account_id' => [
+                    'そのaccount idはすでに使われています。',
+                ],
+            ],
+            'message' => 'The given data was invalid.'
+        ]);
+        $this->assertDatabaseMissing('users', [
+            'id' => $this->user->id,
+            'name' => 'guest',
+            'account_id' => $wrongUser->account_id,
+            'profile' => 'よろです！！',
+        ]);
     }
 }
