@@ -6,6 +6,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 
 class UpdateUserApiTest extends TestCase
 {
@@ -22,10 +24,14 @@ class UpdateUserApiTest extends TestCase
      */
     public function 正常系()
     {
+        // テスト用ストレージ
+        Storage::fake('local');
+
         $response = $this->actingAs($this->user)->json('PUT', route('user.update'), [
             'name' => 'guest',
             'account_id' => 'GUEST',
             'profile' => 'よろです！！',
+            'image_name' => UploadedFile::fake()->image('user_image.jpeg'),
         ]);
 
         $response->assertStatus(200);
@@ -34,6 +40,7 @@ class UpdateUserApiTest extends TestCase
             'account_id' => 'GUEST',
             'profile' => 'よろです！！',
         ]);
+        // Storage::assertExists(UploadedFile::fake()->image('user_image.jpeg'));
     }
 
     /**

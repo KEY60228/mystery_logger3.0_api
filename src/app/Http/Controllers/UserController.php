@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Review;
@@ -79,11 +81,46 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request) {
         $user = Auth::user();
 
-        $user->update([
-            'name' => $request->name,
-            'account_id' => $request->account_id,
-            'profile' => $request->profile,
-        ]);
+        // ファイルの拡張子取得
+        if ($request->image_name) {
+            $extension = $request->image_name->extension();
+            
+            // ランダムな英数字+拡張子でファイル名決定
+            $chars = array_merge(
+                range(0, 9), range('a', 'z'), range('A', 'Z'), ['-', '_']
+            );
+            $filename = '';
+            for ($i = 0; $i < 12; $i++) {
+                $filename .= $chars[array_rand($chars)];
+            }
+            $filename .= '.' . $extension;
+            
+            // ファイル保存
+            Storage::disk('public')->putFileAs('/user_img', $request->image_name, $filename);
+    
+            // DBエラー時にファイル削除するためトランザクション開始
+            DB::beginTransaction();
+            try {
+                $user->update([
+                    'name' => $request->name,
+                    'account_id' => $request->account_id,
+                    'profile' => $request->profile,
+                    'image_name' => '/storage/user_img/' . $filename,
+                ]);
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                // 失敗時ファイル削除
+                Storage::delete($filename);
+                throw $e;
+            }
+        } else {
+            $user->update([
+                'name' => $request->name,
+                'account_id' => $request->account_id,
+                'profile' => $request->profile,
+            ]);
+        }
 
         return Response::json([], 200);
     }

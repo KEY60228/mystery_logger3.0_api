@@ -31,7 +31,8 @@ class UpdateUserRequest extends FormRequest
                 'string',
                 Rule::unique('users')->ignore($this->user()),
             ],
-            'profile' => ['string'],
+            'profile' => [],
+            'image_name' => ['file', 'mimes:jpg,jpeg,png,gif'],
         ];
     }
 }
