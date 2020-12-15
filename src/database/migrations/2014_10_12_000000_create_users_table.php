@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique()->comment('メールアドレス');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->comment('パスワード');
-            $table->string('image_name')->default('default.jpeg')->comment('ユーザー画像');
+            $table->string('image_name')->default('/storage/user_img/default.jpeg')->comment('ユーザー画像のパス');
             $table->rememberToken();
             $table->softDeletes();
             $table->boolean('exist')->nullable()->generatedAs('case when deleted_at is null then 1 else null end')->comment('論理削除確認 1:未削除 null:削除済');

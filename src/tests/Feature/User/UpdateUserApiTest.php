@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\UploadedFile;
 
 class UpdateUserApiTest extends TestCase
@@ -18,14 +19,14 @@ class UpdateUserApiTest extends TestCase
         parent::setUp();
         $this->user = factory(User::class)->create();
     }
-
+    
     /**
      * @test
      */
     public function 正常系()
     {
         // テスト用ストレージ
-        Storage::fake('local');
+        Storage::fake('public');
 
         $response = $this->actingAs($this->user)->json('PUT', route('user.update'), [
             'name' => 'guest',
@@ -40,7 +41,8 @@ class UpdateUserApiTest extends TestCase
             'account_id' => 'GUEST',
             'profile' => 'よろです！！',
         ]);
-        // Storage::assertExists(UploadedFile::fake()->image('user_image.jpeg'));
+        $user = User::first();
+        Storage::disk('public')->assertExists(substr($user->image_name, 9));
     }
 
     /**
@@ -91,5 +93,24 @@ class UpdateUserApiTest extends TestCase
             'account_id' => $wrongUser->account_id,
             'profile' => 'よろです！！',
         ]);
+    }
+
+    /**
+     * @test
+     */
+    public function 異常系_DBエラー()
+    {
+        Schema::drop('users');
+        Storage::fake('public');
+
+        $response = $this->actingAs($this->user)->json('PUT', route('user.update'), [
+            'name' => 'guest',
+            'account_id' => 'GUEST',
+            'profile' => 'よろです！！',
+            'image_name' => UploadedFile::fake()->image('user_image.jpeg'),
+        ]);
+
+        $response->assertStatus(500);
+        $this->assertEquals(0, count(Storage::disk('public')->files()));
     }
 }

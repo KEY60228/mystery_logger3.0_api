@@ -101,6 +101,9 @@ class UserController extends Controller
             // DBエラー時にファイル削除するためトランザクション開始
             DB::beginTransaction();
             try {
+                // 成功時のためにファイル名取っておく
+                $ex_filename = $user->image_name;
+
                 $user->update([
                     'name' => $request->name,
                     'account_id' => $request->account_id,
@@ -108,6 +111,11 @@ class UserController extends Controller
                     'image_name' => '/storage/user_img/' . $filename,
                 ]);
                 DB::commit();
+
+                // 成功時元ファイル削除
+                if ($user->image_name !== '/storage/user_img/default.jpeg') {
+                    Storage::disk('public')->delete(substr($ex_filename, 9));
+                }
             } catch (\Exception $e) {
                 DB::rollback();
                 // 失敗時ファイル削除

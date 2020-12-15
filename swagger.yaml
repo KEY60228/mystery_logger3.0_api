@@ -235,18 +235,20 @@ paths:
         put:
             description: 'ユーザー情報編集'
             parameters:
-                -   in: 'body'
-                    name: 'users'
+                -   in: 'formData'
+                    name: 'user_name'
                     required: true
-                    schema:
-                        type: 'object'
-                        properties:
-                            name:
-                                type: 'string'
-                            account_id:
-                                type: 'string'
-                            profile:
-                                type: 'string'
+                    type: 'string'
+                -   in: 'formData'
+                    name: 'account_id'
+                    required: true
+                    type: 'string'
+                -   in: 'formData'
+                    name: 'profile'
+                    type: 'string'
+                -   in: 'formData'
+                    name: 'image_name'
+                    type: 'file'
             responses:
                 200:
                     description: '更新成功'
