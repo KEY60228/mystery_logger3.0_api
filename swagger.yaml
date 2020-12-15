@@ -938,8 +938,8 @@ definitions:
                 type: 'integer'
             spoil:
                 type: 'boolean'
-            contents:
-                type: 'string'
+            # contents:
+            #     type: 'string'
             result:
                 type: 'integer'
             rating:
@@ -954,6 +954,8 @@ definitions:
                 type: 'integer'
             review_likes_count:
                 type: 'integer'
+            exposed_contents:
+                type: 'string'
     Organizer:
         type: 'object'
         properties:

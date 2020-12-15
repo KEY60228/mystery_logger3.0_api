@@ -15,11 +15,19 @@ class Review extends Model
 
     protected $guarded = [];
 
+    protected $hidden = [
+        'contents',
+    ];
+
     protected $casts = [
         'rating' => 'float',
     ];
 
-    protected $appends = ['review_comments_count', 'review_likes_count'];
+    protected $appends = [
+        'review_comments_count',
+        'review_likes_count',
+        'exposed_contents',
+    ];
 
     protected $dates = ['deleted_at'];
 
@@ -45,5 +53,11 @@ class Review extends Model
 
     public function getReviewLikesCountAttribute() {
         return $this->review_likes()->count();
+    }
+
+    public function getExposedContentsAttribute() {
+        if (!$this->spoil) {
+            return $this->contents;
+        }
     }
 }

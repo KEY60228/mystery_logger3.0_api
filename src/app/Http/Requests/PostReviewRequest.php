@@ -36,7 +36,7 @@ class PostReviewRequest extends FormRequest
                     $query->where('user_id', Auth::id())->whereNull('deleted_at');
                 }),
             ],
-            'contents' => ['max:255', 'string'],
+            'contents' => ['max:255'],
             'spoil' => ['required', 'boolean'],
             'result' => ['required', 'between:0,2', 'integer'],
             'rating' => ['required', 'between:0,5'],

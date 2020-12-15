@@ -58,6 +58,9 @@ Route::put('/reviews/{reviewId}', 'ReviewController@update')->middleware('auth')
 // レビュー削除
 Route::delete('/reviews/{reviewId}', 'ReviewController@delete')->middleware('auth')->name('review.delete');
 
+// ネタバレ取得
+Route::get('/spoil/{reviewId}', 'ReviewController@spoil')->middleware('auth')->name('review.spoil');
+
 // フォロー
 Route::put('/follow', 'FollowController@follow')->middleware('auth')->name('follow');
 

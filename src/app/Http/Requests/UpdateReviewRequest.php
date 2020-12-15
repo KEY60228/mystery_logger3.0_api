@@ -26,7 +26,7 @@ class UpdateReviewRequest extends FormRequest
         $today = date('Y-m-d');
 
         return [
-            'contents' => ['max:255', 'string'],
+            'contents' => ['max:255'],
             'spoil' => ['required', 'boolean'],
             'result' => ['required', 'between:0,2', 'integer'],
             'rating' => ['required', 'between:0,5'],

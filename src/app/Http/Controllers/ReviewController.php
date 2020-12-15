@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\PostReviewRequest;
 use App\Http\Requests\UpdateReviewRequest;
 use App\Models\Review;
@@ -153,5 +154,44 @@ class ReviewController extends Controller
         $timeline = $user_reviews->merge($follows_reviews)->sortByDesc('created_at')->values()->all();
 
         return Response::json($timeline, 200);
+    }
+
+    /**
+     * ネタバレ取得
+     */
+    public function spoil(Request $request, $id) {
+        $review = Review::whereId($id)->with([
+            'user',
+            'product',
+            'product.category',
+            'product.organizer',
+            'product.performances.venue',
+            'review_comments',
+            'review_comments.user',
+        ])->first();
+
+        if (!$review) {
+            return Response::json([
+                'errors' => [
+                    'review_id' => [
+                        '指定されたIDのレビューは存在しません。',
+                    ],
+                ],
+                'message' => 'The given data was invalid.',
+            ], 404);
+        }
+        
+        $user = Auth::user();
+
+        if (!$user->reviews->contains('product_id', $review->product_id)) {
+            return Response::json([
+                'message' => 'You have no right to see.'
+            ], 422);
+        }
+
+        $review->exposed_contents = $review->contents;
+        $review->spoil = false;
+
+        return Response::json($review, 200);
     }
 }
