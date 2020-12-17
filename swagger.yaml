@@ -105,7 +105,7 @@ paths:
                             pre_register_id:
                                 type: 'integer'
             responses:
-                200:
+                201:
                     description: '本登録成功'
                     schema:
                         $ref: '#/definitions/CurrentUser'
@@ -534,6 +534,48 @@ paths:
                                 type: 'string'
                 422:
                     description: '削除失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+    /spoil/{reviewId}:
+        get:
+            description: 'ネタバレ内容取得'
+            parameters:
+                -   in: 'path'
+                    name: 'reviewId'
+                    description: 'レビューID'
+                    required: true
+                    type: 'string'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/Review.detail'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                404:
+                    description: '取得失敗 該当レビューなし'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+                422:
+                    description: '取得失敗'
                     schema:
                         type: 'object'
                         properties:
