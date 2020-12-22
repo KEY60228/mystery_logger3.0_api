@@ -31,6 +31,18 @@ class Review extends Model
 
     protected $dates = ['deleted_at'];
 
+    protected static function boot() {
+        parent::boot();
+        static::deleting(function($model) {
+            foreach ($model->review_comments()->get() as $review_comment) {
+                $review_comment->delete();
+            }
+            foreach ($model->review_likes()->get() as $review_like) {
+                $review_like->delete();
+            }
+        });
+    }
+
     public function user() {
         return $this->belongsTo('\App\Models\User');
     }
