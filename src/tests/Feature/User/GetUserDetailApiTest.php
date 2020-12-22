@@ -57,6 +57,9 @@ class GetUserDetailApiTest extends TestCase
         ]);
     }
 
+    /**
+     * @test
+     */
     public function 該当しないID()
     {
         $response = $this->json('GET', route('user.show', [
@@ -65,9 +68,9 @@ class GetUserDetailApiTest extends TestCase
 
         $response->assertStatus(404)->assertJson([
             'errors' => [
-                'account_id' => '指定のアカウントIDのユーザーはいません。'
+                'account_id' => '指定されたアカウントIDのユーザーはいません。'
             ],
-            'message' => 'The given data was invalid.',
+            'messages' => 'The given data was invalid.',
         ]);
     }
 }
