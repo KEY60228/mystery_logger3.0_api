@@ -12,16 +12,22 @@ class CategoriesTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('categories')->insert([[
-            'name' => 'ルームタイプ'
-        ], [
-            'name' => 'ホールタイプ'
-        ], [
-            'name' => 'キット配布タイプ'
-        ], [
-            'name' => 'オンラインタイプ'
-        ], [
-            'name' => 'その他'
-        ]]);
+        DB::table('categories')->insert([
+            [
+                'name' => 'ルームタイプ'
+            ],
+            [
+                'name' => 'ホールタイプ'
+            ],
+            [
+                'name' => 'キット配布タイプ'
+            ],
+            [
+                'name' => 'オンラインタイプ'
+            ],
+            [
+                'name' => 'その他'
+            ]
+        ]);
     }
 }
