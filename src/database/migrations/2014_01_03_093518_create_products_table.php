@@ -22,7 +22,7 @@ class CreateProductsTable extends Migration
             $table->string('kana_name')->comment('作品名読み');
             $table->string('phrase')->nullable()->comment('作品フレーズ');
             $table->string('website')->nullable()->comment('作品WEBページ');
-            $table->string('image_name')->default('no_image.jpeg')->comment('作品画像');
+            $table->string('image_name')->default('/storage/product_img/no_image.png')->comment('作品画像');
             $table->integer('limitTime')->nullable()->comment('制限時間');
             $table->integer('requiredTime')->nullable()->comment('所要時間');
             $table->integer('minParty')->nullable()->comment('最小人数');

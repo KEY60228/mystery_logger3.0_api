@@ -21,7 +21,7 @@ class CreateOrganizersTable extends Migration
             $table->string('company_name')->nullable()->comment('団体・企業名');
             $table->string('kana_company_name')->nullable()->comment('団体・企業名読み');
             $table->string('website')->nullable()->comment('サイトURL');
-            $table->string('image_name')->default('no_image.jpeg')->comment('団体イメージ画像');
+            $table->string('image_name')->default('/storage/organizer_img/noimage.png')->comment('団体イメージ画像');
             $table->string('zipcode')->nullable()->comment('本拠地郵便番号');
             $table->string('addr_prefecture')->nullable()->comment('本拠地都道府県');
             $table->string('addr_city')->nullable()->comment('本拠地市区町村');
