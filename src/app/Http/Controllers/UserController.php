@@ -113,7 +113,7 @@ class UserController extends Controller
                 DB::commit();
 
                 // 成功時元ファイル削除
-                if ($user->image_name !== '/storage/user_img/default.jpeg') {
+                if ($ex_filename !== '/storage/user_img/default.jpeg') {
                     Storage::disk('public')->delete(substr($ex_filename, 9));
                 }
             } catch (\Exception $e) {
