@@ -1,0 +1,1388 @@
+swagger: '2.0'
+info:
+    description: 'This is a document of mystery-logger API'
+    version: '1.0.0'
+    title: 'Mystery Logger'
+host: 'localhost:1443'
+basePath: '/v1'
+schemes:
+    -   'https'
+paths:
+    /preregister:
+        post:
+            description: '仮登録'
+            parameters:
+                -   in: 'body'
+                    name: 'preregister'
+                    description: 'メールアドレス'
+                    required: true
+                    schema:
+                        type: 'object'
+                        properties:
+                            email:
+                                type: 'string'
+            responses:
+                201:
+                    description: '仮登録成功'
+                422:
+                    description: '仮登録失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    email:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                            example: 'emailは必須です'
+                            message:
+                                type: 'string'
+                                example: 'The given data was invalid'
+    /register/verify:
+        post:
+            description: 'メールアドレス認証'
+            parameters:
+                -   in: 'body'
+                    name: 'verify'
+                    description: 'メールアドレスと仮登録ID'
+                    required: true
+                    schema:
+                        type: 'object'
+                        properties:
+                            token:
+                                type: 'string'
+            responses:
+                200:
+                    description: '認証成功'
+                    schema:
+                        type: 'object'
+                        properties:
+                            email:
+                                type: 'string'
+                                example: 'guest@example.com'
+                            pre_register_id:
+                                type: 'integer'
+                                example: 1
+                422:
+                    description: '認証失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    verify:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                            example: 'トークンが不正です'
+                            message:
+                                type: 'string'
+                                example: 'The given token was invalid.'
+    /register:
+        post:
+            description: '本登録'
+            parameters:
+                -   in: 'body'
+                    name: 'register'
+                    description: 'ユーザー情報'
+                    required: true
+                    schema:
+                        type: 'object'
+                        properties:
+                            account_id:
+                                type: 'string'
+                            email:
+                                type: 'string'
+                            name:
+                                type: 'string'
+                            password:
+                                type: 'string'
+                            password_confirmation:
+                                type: 'string'
+                            pre_register_id:
+                                type: 'integer'
+            responses:
+                201:
+                    description: '本登録成功'
+                    schema:
+                        $ref: '#/definitions/CurrentUser'
+                422:
+                    description: '本登録失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    account_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    name:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    password:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    pre_register_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    email:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /login:
+        post:
+            description: 'ログイン'
+            parameters:
+                -   in: 'body'
+                    name: 'login'
+                    description: 'ユーザー情報'
+                    required: true
+                    schema:
+                        type: 'object'
+                        properties:
+                            email:
+                                type: 'string'
+                            password:
+                                type: 'string'
+            responses:
+                200:
+                    description: 'ログイン成功'
+                    schema:
+                        $ref: '#/definitions/CurrentUser'
+                422:
+                    description: 'ログイン失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    email:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    password:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /logout:
+        post:
+            description: 'ログアウト'
+            responses:
+                200:
+                    description: 'ログアウト成功'
+    /products:
+        get:
+            description: '全作品取得'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Product.index'
+    /products/{id}:
+        get:
+            description: '一作品取得'
+            parameters:
+                -   in: 'path'
+                    name: 'id'
+                    description: '作品ID'
+                    required: true
+                    type: 'string'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/Product.detail'
+                404:
+                    description: '取得失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    product_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /currentuser:
+        get:
+            description: 'クッキーログイン&ユーザー情報更新'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/CurrentUser'
+                204:
+                    description: '取得情報なし'
+    /users:
+        put:
+            description: 'ユーザー情報編集'
+            parameters:
+                -   in: 'formData'
+                    name: 'user_name'
+                    required: true
+                    type: 'string'
+                -   in: 'formData'
+                    name: 'account_id'
+                    required: true
+                    type: 'string'
+                -   in: 'formData'
+                    name: 'profile'
+                    type: 'string'
+                -   in: 'formData'
+                    name: 'image_name'
+                    type: 'file'
+            responses:
+                200:
+                    description: '更新成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: '更新失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    name:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    account_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    profile:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /users/{userId}:
+        get:
+            description: '一ユーザー取得'
+            parameters:
+                -   in: 'path'
+                    name: 'userId'
+                    description: 'アカウントID'
+                    required: true
+                    type: 'string'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/User.detail'
+                404:
+                    description: '取得失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    product_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /reviews:
+        get:
+            description: 'タイムライン取得'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Review.index'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+        post:
+            description: 'レビュー投稿'
+            parameters:
+                -   in: 'body'
+                    name: 'review'
+                    required: true
+                    schema:
+                        type: 'object'
+                        properties:
+                            product_id:
+                                type: 'string'
+                            spoil:
+                                type: 'boolean'
+                            rating:
+                                type: 'integer'
+                            result:
+                                type: 'integer'
+                            joined_at:
+                                type: 'string'
+                            contents:
+                                type: 'string'
+            responses:
+                200:
+                    description: '投稿成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: '投稿失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    user_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    product_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    contents:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    spoil:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    result:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    rating:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    joined_at:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /reviews/{reviewId}:
+        get:
+            description: '一レビュー取得'
+            parameters:
+                -   in: 'path'
+                    name: 'reviewId'
+                    description: 'レビューID'
+                    required: true
+                    type: 'string'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/Review.detail'
+                404:
+                    description: '取得失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+        put:
+            description: 'レビュー更新'
+            parameters:
+                -   in: 'path'
+                    name: 'reviewId'
+                    description: 'レビューID'
+                    required: true
+                    type: 'string'
+                -   in: 'body'
+                    name: 'review'
+                    schema:
+                        type: 'object'
+                        properties:
+                            spoil:
+                                type: 'boolean'
+                            rating:
+                                type: 'integer'
+                            result:
+                                type: 'integer'
+                            joined_at:
+                                type: 'string'
+                            contents:
+                                type: 'string'
+            responses:
+                200:
+                    description: '更新成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                404:
+                    description: '更新失敗 ID不備'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+                422:
+                    description: '投稿失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    contents:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    spoil:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    result:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    rating:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    joined_at:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+        delete:
+            description: 'レビュー削除'
+            parameters:
+                -   in: 'path'
+                    name: 'reviewId'
+                    description: 'レビューID'
+                    required: true
+                    type: 'string'
+            responses:
+                204:
+                    description: '削除成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                404:
+                    description: '削除失敗 ID不備'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+                422:
+                    description: '削除失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+    /spoil/{reviewId}:
+        get:
+            description: 'ネタバレ内容取得'
+            parameters:
+                -   in: 'path'
+                    name: 'reviewId'
+                    description: 'レビューID'
+                    required: true
+                    type: 'string'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/Review.detail'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                404:
+                    description: '取得失敗 該当レビューなし'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+                422:
+                    description: '取得失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+    /follow:
+        put:
+            description: 'フォロー'
+            parameters:
+                -   in: 'body'
+                    name: 'followed_id'
+                    schema:
+                        type: 'object'
+                        properties:
+                            followed_id:
+                                type: integer
+            responses:
+                200:
+                    description: 'フォロー成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: 'フォロー失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    followed_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+        delete:
+            description: 'フォロー解除'
+            parameters:
+                -   in: 'body'
+                    name: 'followed_id'
+                    schema:
+                        type: 'object'
+                        properties:
+                            followed_id:
+                                type: integer
+            responses:
+                204:
+                    description: 'フォロー解除成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: 'フォロー解除失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    followed_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /wanna:
+        put:
+            description: '「行きたい」登録'
+            parameters:
+                -   in: 'body'
+                    name: 'product_id'
+                    schema:
+                        type: 'object'
+                        properties:
+                            product_id:
+                                type: integer
+            responses:
+                200:
+                    description: '「行きたい」登録成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: '「行きたい」登録失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    product_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+        delete:
+            description: '「行きたい」登録解除'
+            parameters:
+                -   in: 'body'
+                    name: 'product_id'
+                    schema:
+                        type: 'object'
+                        properties:
+                            product_id:
+                                type: integer
+            responses:
+                204:
+                    description: '「行きたい」登録解除成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: '「行きたい」登録解除失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    product_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /comments/review:
+        post:
+            description: 'レビューに対するコメントの投稿'
+            parameters:
+                -   in: 'body'
+                    name: 'review comments'
+                    schema:
+                        type: 'object'
+                        properties:
+                            review_id:
+                                type: 'integer'
+                            contents:
+                                type: 'string'
+            responses:
+                201:
+                    description: 'コメント投稿成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: 'コメント投稿失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                                    contents:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /likes/review:
+        put:
+            description: 'レビューに対するLIKE'
+            parameters:
+                -   in: 'body'
+                    name: 'review_id'
+                    schema:
+                        type: 'object'
+                        properties:
+                            review_id:
+                                type: integer
+            responses:
+                200:
+                    description: 'LIKE成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: 'LIKE失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+        delete:
+            description: 'LIKE取り消し'
+            parameters:
+                -   in: 'body'
+                    name: 'review_id'
+                    schema:
+                        type: 'object'
+                        properties:
+                            review_id:
+                                type: integer
+            responses:
+                204:
+                    description: 'LIKE取り消し成功'
+                401:
+                    description: '未認証'
+                    schema:
+                        type: 'object'
+                        properties:
+                            message:
+                                type: 'string'
+                422:
+                    description: 'LIKE取り消し失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    review_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /organizer/{organizerId}:
+        get:
+            description: '主催者情報の取得'
+            parameters:
+                -   in: 'path'
+                    name: 'organizerId'
+                    description: '主催者ID'
+                    required: true
+                    type: 'string'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/Organizer.detail'
+                404:
+                    description: '取得失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    organizer_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /venue/{venueId}:
+        get:
+            description: '会場情報の取得'
+            parameters:
+                -   in: 'path'
+                    name: 'venueId'
+                    description: '会場ID'
+                    required: true
+                    type: 'string'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        $ref: '#/definitions/Venue.detail'
+                404:
+                    description: '取得失敗'
+                    schema:
+                        type: 'object'
+                        properties:
+                            errors:
+                                type: 'object'
+                                properties:
+                                    venue_id:
+                                        type: 'array'
+                                        items:
+                                            type: 'string'
+                            message:
+                                type: 'string'
+    /accompanies:
+        get:
+            description: '同行者募集一覧の取得'
+            responses:
+                200:
+                    description: '取得成功'
+                    schema:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Accompany.index'
+
+definitions:
+    Product:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            organizer_id:
+                type: 'integer'
+            category_id:
+                type: 'integer'
+            name:
+                type: 'string'
+            kana_name:
+                type: 'string'
+            phrase:
+                type: 'string'
+            website:
+                type: 'string'
+            image_name:
+                type: 'string'
+            limitTime:
+                type: 'string'
+            requiredTime:
+                type: 'string'
+            minParty:
+                type: 'integer'
+            maxParty:
+                type: 'integer'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+            avg_rating:
+                type: 'integer'
+            success_count:
+                type: 'integer'
+            na_count:
+                type: 'integer'
+            success_rate:
+                type: 'integer'
+            reviews_count:
+                type: 'integer'
+            wannas_count:
+                type: 'integer'
+    User:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            account_id:
+                type: 'string'
+            name:
+                type: 'string'
+            profile:
+                type: 'string'
+            image_name:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+            follows_count:
+                type: 'integer'
+            followers_count:
+                type: 'integer'
+            success_rate:
+                type: 'integer'
+            reviews_count:
+                type: 'integer'
+            wannas_count:
+                type: 'integer'
+            like_reviews_count:
+                type: 'integer'
+    Review:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            user_id:
+                type: 'integer'
+            product_id:
+                type: 'integer'
+            spoil:
+                type: 'boolean'
+            # contents:
+            #     type: 'string'
+            result:
+                type: 'integer'
+            rating:
+                type: 'integer'
+            joined_at:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+            review_comments_count:
+                type: 'integer'
+            review_likes_count:
+                type: 'integer'
+            exposed_contents:
+                type: 'string'
+    Organizer:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            service_name:
+                type: 'string'
+            kana_service_name:
+                type: 'string'
+            company_name:
+                type: 'string'
+            kana_company_name:
+                type: 'string'
+            website:
+                type: 'string'
+            image_name:
+                type: 'string'
+            zipcode:
+                type: 'string'
+            addr_prefecture:
+                type: 'string'
+            addr_city:
+                type: 'string'
+            addr_block:
+                type: 'string'
+            addr_building:
+                type: 'string'
+            tel:
+                type: 'string'
+            mail:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    Venue:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            organizer_id:
+                type: 'integer'
+            name:
+                type: 'string'
+            kana_name:
+                type: 'string'
+            zipcode:
+                type: 'string'
+            addr_prefecture:
+                type: 'string'
+            addr_city:
+                type: 'string'
+            addr_block:
+                type: 'string'
+            addr_building:
+                type: 'string'
+            lat:
+                type: 'string'
+            long:
+                type: 'string'
+            tel:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    Performance:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            product_id:
+                type: 'integer'
+            venue_id:
+                type: 'integer'
+            active_id:
+                type: 'integer'
+            start_date:
+                type: 'string'
+            end_date:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    Category:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            name:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    Wanna:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            user_id:
+                type: 'integer'
+            product_id:
+                type: 'integer'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    ReviewLike:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            user_id:
+                type: 'integer'
+            review_id:
+                type: 'integer'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    ReviewComment:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            user_id:
+                type: 'integer'
+            review_id:
+                type: 'integer'
+            contents:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+    Accompany:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            user_id:
+                type: 'integer'
+            performance_id:
+                type: 'integer'
+            contents:
+                type: 'string'
+            created_at:
+                type: 'string'
+            updated_at:
+                type: 'string'
+
+    CurrentUser:
+        type: 'object'
+        properties:
+            id:
+                type: 'integer'
+            account_id:
+                type: 'string'
+                example: 'guest'
+            name:
+                type: 'string'
+                example: 'GUEST'
+            follows_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+            followers_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+            done_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+            wanna_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+            like_reviews_id:
+                type: 'array'
+                items:
+                    type: 'integer'
+    Product.index:
+        allOf:
+            -   $ref: '#/definitions/Product'
+            -   type: 'object'
+                properties:
+                    category:
+                        $ref: '#/definitions/Category'
+                    performances:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/Performance'
+                                -   type: 'object'
+                                    properties:
+                                        venue:
+                                            $ref: '#/definitions/Venue'
+                    organizer:
+                        $ref: '#/definitions/Organizer'
+    Product.detail:
+        allOf:
+            -   $ref: '#/definitions/Product.index'
+            -   type: 'object'
+                properties:
+                    reviews:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/Review'
+                                -   type: 'object'
+                                    properties:
+                                        user:
+                                            $ref: '#/definitions/User'
+    User.detail:
+        allOf:
+            -   $ref: '#/definitions/User'
+            -   type: 'object'
+                properties:
+                    reviews:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/Review'
+                                -   type: 'object'
+                                    properties:
+                                        product:
+                                            allOf:
+                                              -   $ref: '#/definitions/Product'
+                                              -   type: 'object'
+                                                  properties:
+                                                      category:
+                                                          $ref: '#/definitions/Category'
+                    wannas:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/Wanna'
+                                -   type: 'object'
+                                    properties:
+                                        product:
+                                            $ref: '#/definitions/Product'
+                    follows:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/User'
+                    followers:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/User'
+                    review_likes:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/ReviewLike'
+                                -   type: 'object'
+                                    properties:
+                                        review:
+                                            allOf:
+                                                -   $ref: '#/definitions/Review'
+                                                -   type: 'object'
+                                                    properties:
+                                                        user:
+                                                            $ref: '#/definitions/User'
+                                                        product:
+                                                            $ref: '#/definitions/Product'
+    Review.detail:
+        allOf:
+            -   $ref: '#/definitions/Review'
+            -   type: 'object'
+                properties:
+                    user:
+                        $ref: '#/definitions/User'
+                    product:
+                        allOf:
+                            -   $ref: '#/definitions/Product'
+                            -   type: 'object'
+                                properties:
+                                    category:
+                                        $ref: '#/definitions/Category'
+                                    organizer:
+                                        $ref: '#/definitions/Organizer'
+                                    performances:
+                                        type: 'array'
+                                        items:
+                                            allOf:
+                                                -   $ref: '#/definitions/Performance'
+                                                -   type: 'object'
+                                                    properties:
+                                                        venue:
+                                                            $ref: '#/definitions/Venue'
+                    review_comments:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/ReviewComment'
+                                -   type: 'object'
+                                    properties:
+                                        user:
+                                            $ref: '#/definitions/User'
+    Review.index:
+        allOf:
+            -   $ref: '#/definitions/Review'
+            -   type: 'object'
+                properties:
+                    product:
+                        $ref: '#/definitions/Product'
+                    user:
+                        $ref: '#/definitions/User'
+    Organizer.detail:
+        allOf:
+            -   $ref: '#/definitions/Organizer'
+            -   type: 'object'
+                properties:
+                    products:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/Product'
+                                -   type: 'object'
+                                    properties:
+                                        category:
+                                            $ref: '#/definitions/Category'
+                                        organizer:
+                                            $ref: '#/definitions/Organizer'
+                                        performances:
+                                            type: 'array'
+                                            items:
+                                                allOf:
+                                                    -   $ref: '#/definitions/Performance'
+                                                    -   type: 'object'
+                                                        properties:
+                                                            venue:
+                                                                $ref: '#/definitions/Venue'
+                    venues:
+                        type: 'array'
+                        items:
+                            $ref: '#/definitions/Venue'
+    Venue.detail:
+        allOf:
+            -   $ref: '#/definitions/Venue'
+            -   type: 'object'
+                properties:
+                    organizer:
+                        $ref: '#/definitions/Organizer'
+                    performances:
+                        type: 'array'
+                        items:
+                            allOf:
+                                -   $ref: '#/definitions/Performance'
+                                -   type: 'object'
+                                    properties:
+                                        product:
+                                            allOf:
+                                                -   $ref: '#/definitions/Product'
+                                                -   type: 'object'
+                                                    properties:
+                                                        category:
+                                                            $ref: '#/definitions/Category'
+                                                        organizer:
+                                                            $ref: '#/definitions/Organizer'
+                                                        performances:
+                                                            type: 'array'
+                                                            items:
+                                                                allOf:
+                                                                    -   $ref: '#/definitions/Performance'
+                                                                    -   type: 'object'
+                                                                        properties:
+                                                                            venue:
+                                                                                $ref: '#/definitions/Venue'
+    Accompany.index:
+        allOf:
+            -   $ref: '#/definitions/Accompany'
+            -   type: 'object'
+                properties:
+                    user:
+                        $ref: '#/definitions/User'
+                    performance:
+                        allOf:
+                            -   $ref: '#/definitions/Performance'
+                            -   type: 'object'
+                                properties:
+                                    venue:
+                                        $ref: '#/definitions/Venue'
+                                    product:
+                                        $ref: '#/definitions/Product'
