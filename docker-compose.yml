@@ -63,3 +63,11 @@ services:
       - "8025:8025"
     env_file: 
       - .env
+
+  blackfire:
+    image: blackfire/blackfire
+    ports:
+      - "8707"
+    env_file: 
+      - .env
+  #  docker-compose exec blackfire blackfire curl --header 'X-NAZOLOG-TOKEN: fkkaASjsGelGmmrRtcaGytkEwlLLBcCDioeSA' --insecure 'https://0.0.0.0:1443/v1/products' でprofile
