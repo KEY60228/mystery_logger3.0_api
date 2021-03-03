@@ -71,3 +71,8 @@ services:
     env_file: 
       - .env
   #  docker-compose exec blackfire blackfire curl --header 'X-NAZOLOG-TOKEN: fkkaASjsGelGmmrRtcaGytkEwlLLBcCDioeSA' --insecure 'https://0.0.0.0:1443/v1/products' でprofile
+
+  testing-pgsql:
+    image: postgres:12.3-alpine
+    env_file: 
+      - .env
