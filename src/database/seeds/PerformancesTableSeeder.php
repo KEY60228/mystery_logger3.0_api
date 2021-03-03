@@ -1498,6 +1498,11 @@ class PerformancesTableSeeder extends Seeder
                 'active_id' => 0,
             ],
             [
+                'product_id' => 210,
+                'venue_id' => 64,
+                'active_id' => 0,
+            ],
+            [
                 'product_id' => 211,
                 'venue_id' => 62,
                 'active_id' => 0,
