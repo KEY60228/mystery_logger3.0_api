@@ -20,6 +20,7 @@ class CreateVenuesTable extends Migration
             $table->string('name')->comment('会場名');
             $table->string('kana_name')->comment('会場名読み');
             $table->string('zipcode')->nullable()->comment('郵便番号');
+            $table->integer('addr_pref_id')->nullable()->comment('都道府県ID');
             $table->string('addr_prefecture')->nullable()->comment('都道府県');
             $table->string('addr_city')->nullable()->comment('市区町村');
             $table->string('addr_block')->nullable()->comment('町域以下');
