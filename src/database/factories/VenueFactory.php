@@ -11,6 +11,7 @@ $factory->define(Venue::class, function (Faker $faker) {
         'name' => $faker->text,
         'kana_name' => $faker->text,
         'zipcode' => $faker->postcode,
+        'addr_pref_id' => rand(1, 47),
         'addr_prefecture' => $faker->city,
         'addr_city' => $faker->address,
         'addr_block' => $faker->streetName,

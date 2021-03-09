@@ -55,10 +55,10 @@ class Product extends Model
     }
 
     public function getSuccessRateAttribute() {
-        if ($this->reviews()->count() === $this->NACount) {
+        if ($this->reviews_count === $this->na_count) {
             return null;
         } else {
-            return round(($this->success_count / ($this->reviews()->count() - $this->na_count)), 2);
+            return round(($this->success_count / ($this->reviews_count - $this->na_count)), 2);
         }
     }
 

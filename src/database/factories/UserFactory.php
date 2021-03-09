@@ -5,6 +5,7 @@
 use App\Models\User;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
+use App\Models\PreRegister;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +20,7 @@ use Illuminate\Support\Str;
 
 $factory->define(User::class, function (Faker $faker) {
     return [
-        'pre_register_id' => Str::random(10),
+        'pre_register_id' => factory(PreRegister::class)->create()->id,
         'account_id' => Str::random(10),
         'name' => $faker->name,
         'profile' => $faker->text,

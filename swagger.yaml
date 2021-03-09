@@ -190,9 +190,40 @@ paths:
                 200:
                     description: '取得成功'
                     schema:
-                        type: 'array'
-                        items:
-                            $ref: '#/definitions/Product.index'
+                        type: 'object'
+                        properties:
+                            products_sortby_ratings:
+                                type: 'array'
+                                items:
+                                    $ref: '#/definitions/Product.index'
+                            products_sortby_reviews_count:
+                                type: 'array'
+                                items:
+                                    $ref: '#/definitions/Product.index'
+                            products_sortby_success_rate:
+                                type: 'array'
+                                items:
+                                    $ref: '#/definitions/Product.index'
+                            products_categorizeby_organizer:
+                                type: 'array'
+                                items:
+                                    $ref: '#/definitions/Product.index'
+                            products_categorizeby_venue:
+                                type: 'array'
+                                items:
+                                    $ref: '#/definitions/Product.index'
+                            products_categorizeby_category:
+                                type: 'array'
+                                items:
+                                    $ref: '#/definitions/Product.index'
+                            users_sortby_reviews_count:
+                                type: 'array'
+                                items:
+                                    $ref: '#/definitions/User'
+                            users_sortby_success_rate:
+                                type: 'array'
+                                items:
+                                    $ref: '#/definitions/User'
     /products/{id}:
         get:
             description: '一作品取得'
