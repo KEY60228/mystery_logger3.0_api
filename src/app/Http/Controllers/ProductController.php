@@ -137,4 +137,38 @@ class ProductController extends Controller
 
         return Response::json($product, 200);
     }
+
+    /**
+     * 検索 & 結果の返却
+     * 
+     * @param Illuminate\Http\Request
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function search(Request $request) {
+        $query = Product::query()->select('products.*')
+            ->with(['category', 'performances', 'performances.venue', 'organizer']);
+
+        if ($request->query('keywords', false)) {
+            $query = $query->where('name', 'like', '%'. $request->query('keywords') . '%')
+                ->orWhere('kana_name', 'like', '%' . $request->query('keywords') . '%')
+                ->orWhere('phrase', 'like', '%' . $request->query('keywords') . '%');
+        }
+
+        if ($request->query('organizer', false)) {
+            $query = $query->where('organizer_id', $request->query('organizer'));
+        }
+
+        if ($request->query('category', false)) {
+            $query = $query->where('category_id', $request->query('category'));
+        }
+
+        if ($request->query('venue', false)) {
+            $query = $query->where('venue_id', $request->query('venue'))
+                ->leftJoin('performances', 'products.id', '=', 'performances.product_id');
+        }
+
+        $result = $query->get();
+
+        return Response::json($result, 200);
+    }
 }
