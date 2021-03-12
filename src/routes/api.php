@@ -94,6 +94,9 @@ Route::get('/accompanies', 'AccompanyController@index')->name('accompanies');
 // 団体一覧の取得 (検索用)
 Route::get('/search/organizers', 'OrganizerController@search')->name('search.organizers');
 
+// 会場一覧の取得 (検索用)
+Route::get('/search/venues', 'VenueController@search')->name('search.venues');
+
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
