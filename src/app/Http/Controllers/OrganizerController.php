@@ -9,6 +9,19 @@ use App\Models\Organizer;
 class OrganizerController extends Controller
 {
     /**
+     * 検索用API。IDと団体名だけ返す
+     * 
+     * @param Illuminate\Http\Request $request
+     * @return Illuminate\Support\Facades\Response
+     */
+    public function search(Request $request) {
+        $organizer = Organizer::query()
+            ->select('id', 'service_name', 'company_name')
+            ->get();
+        return Response::json($organizer, 200);
+    }
+
+    /**
      * 主催者情報の取得
      * 
      * @param Illuminate\Http\Request $request
