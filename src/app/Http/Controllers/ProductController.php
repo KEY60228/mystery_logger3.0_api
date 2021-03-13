@@ -51,8 +51,6 @@ class ProductController extends Controller
             ->get();
         $products_sortby_success_rate = $tmp_products->sortBy('success_rate')->slice(0, 9)->values();
 
-        // ToDo: テストDBをpostgresqlに (DISTINCT ONはpostgresの方言だからSQLiteテストは通らない)
-
         // 主催団体別に1本抽出
         $products_categorizeby_organizer = Product::query()
             ->selectRaw('DISTINCT ON (products.organizer_id) products.*, organizers.service_name AS organizer_name')
@@ -166,6 +164,68 @@ class ProductController extends Controller
             $query = $query->where('venue_id', $request->query('venue'))
                 ->leftJoin('performances', 'products.id', '=', 'performances.product_id');
         }
+
+        if ($request->query('ranking', false)) {
+            switch ($request->query('ranking')) {
+                case 1: // 評価が高い順
+                    $result = $query->selectRaw('AVG(reviews.rating) as avg')
+                        ->join('reviews', function($join) {
+                            $join->on('products.id', '=', 'reviews.product_id');
+                            $join->whereNull('reviews.deleted_at');
+                        })
+                        ->groupBy('products.id')
+                        ->orderBy('avg', 'DESC');
+                    break;
+                case 2: // 投稿数が多い順
+                    $result = $query->selectRaw('COUNT(reviews.id) as count')
+                        ->join('reviews', function($join) {
+                            $join->on('products.id', '=', 'reviews.product_id');
+                            $join->whereNull('reviews.deleted_at');
+                        })
+                        ->groupBy('products.id')
+                        ->orderBy('count', 'DESC');
+                    break;
+                case 3: // 成功率が低い順
+                    $query->selectRaw(
+                        'CASE WHEN SUM(reviews.result) = 0 THEN NULL ' .
+                        'ELSE (CAST(SUM(CASE WHEN reviews.result = 1 THEN 1 ELSE 0 END) AS float) / SUM(CASE WHEN reviews.result = 0 THEN 0 ELSE 1 END)) ' .
+                        'END as success_rate'
+                    )
+                        ->join('reviews', function($join) {
+                            $join->on('products.id', '=', 'reviews.product_id');
+                            $join->whereNull('reviews.deleted_at');
+                            $join->where('reviews.result', '!=', '0');
+                        })
+                        ->orderBy('success_rate', 'ASC')
+                        ->groupBy('products.id');
+                    break;
+                case 4: // 成功率が高い順
+                    $query->selectRaw(
+                        'CASE WHEN SUM(reviews.result) = 0 THEN NULL ' .
+                        'ELSE (CAST(SUM(CASE WHEN reviews.result = 1 THEN 1 ELSE 0 END) AS float) / SUM(CASE WHEN reviews.result = 0 THEN 0 ELSE 1 END)) ' .
+                        'END as success_rate'
+                    )
+                        ->join('reviews', function($join) {
+                            $join->on('products.id', '=', 'reviews.product_id');
+                            $join->whereNull('reviews.deleted_at');
+                            $join->where('reviews.result', '!=', '0');
+                        })
+                        ->orderBy('success_rate', 'DESC')
+                        ->groupBy('products.id');
+                    break;
+                case 5: // 「行きたい」「Like」が多い順
+                    $query->selectRaw('COUNT(wannas.id) as count')
+                        ->join('wannas', function($join) {
+                            $join->on('products.id', '=', 'wannas.product_id');
+                        })
+                        ->orderBy('count', 'DESC')
+                        ->groupBy('products.id');
+                    break;
+            }
+        }
+
+        // $result = $query->toSql();
+        // return Response::json(['sql' => $result], 200);
 
         $result = $query->get();
 
