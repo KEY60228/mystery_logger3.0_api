@@ -7,7 +7,6 @@ use App\Models\Product;
 use Illuminate\Support\Facades\Response;
 use App\Models\Review;
 use App\Models\User;
-use App\Http\Requests\SearchRequest;
 
 use Illuminate\Support\Facades\DB;
 
@@ -140,10 +139,10 @@ class ProductController extends Controller
     /**
      * 検索 & 結果の返却
      * 
-     * @param App\Http\Requests\SearchRequest
+     * @param Illuminate\Http\Request
      * @return Illuminate\Support\Facades\Response
      */
-    public function search(SearchRequest $request) {
+    public function search(Request $request) {
         $query = Product::query()->select('products.*')
             ->with(['category', 'performances', 'performances.venue', 'organizer']);
 
