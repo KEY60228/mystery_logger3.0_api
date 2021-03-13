@@ -174,66 +174,65 @@ class ProductController extends Controller
         if ($request->query('ranking', false)) {
             switch ($request->query('ranking')) {
                 case 1: // 評価が高い順
-                    $result = $query->selectRaw('AVG(reviews.rating) as avg')
-                        ->join('reviews', function($join) {
+                    $result = $query->selectRaw('AVG(reviews.rating) as avg, COUNT(reviews.id) as count')
+                        ->leftJoin('reviews', function($join) {
                             $join->on('products.id', '=', 'reviews.product_id');
                             $join->whereNull('reviews.deleted_at');
                         })
-                        ->groupBy('products.id')
-                        ->orderBy('avg', 'DESC');
+                        ->orderByRaw('avg DESC NULLS LAST, count DESC');
                     break;
                 case 2: // 投稿数が多い順
-                    $result = $query->selectRaw('COUNT(reviews.id) as count')
-                        ->join('reviews', function($join) {
+                    $result = $query->selectRaw('COUNT(reviews.id) as count, AVG(reviews.rating) as avg')
+                        ->leftJoin('reviews', function($join) {
                             $join->on('products.id', '=', 'reviews.product_id');
                             $join->whereNull('reviews.deleted_at');
                         })
-                        ->groupBy('products.id')
-                        ->orderBy('count', 'DESC');
+                        ->orderByRaw('count DESC NULLS LAST, avg DESC');
                     break;
                 case 3: // 成功率が低い順
                     $query->selectRaw(
-                        'CASE WHEN SUM(reviews.result) = 0 THEN NULL ' .
+                        'CASE WHEN SUM(reviews.result) = 0 OR SUM(reviews.result) IS NULL THEN NULL ' .
                         'ELSE (CAST(SUM(CASE WHEN reviews.result = 1 THEN 1 ELSE 0 END) AS float) / SUM(CASE WHEN reviews.result = 0 THEN 0 ELSE 1 END)) ' .
-                        'END as success_rate'
+                        'END as rate, COUNT(reviews.id) as count'
                     )
-                        ->join('reviews', function($join) {
+                        ->leftJoin('reviews', function($join) {
                             $join->on('products.id', '=', 'reviews.product_id');
                             $join->whereNull('reviews.deleted_at');
                             $join->where('reviews.result', '!=', '0');
                         })
-                        ->orderBy('success_rate', 'ASC')
-                        ->groupBy('products.id');
+                        ->orderByRaw('rate ASC NULLS LAST, count DESC');
                     break;
                 case 4: // 成功率が高い順
                     $query->selectRaw(
-                        'CASE WHEN SUM(reviews.result) = 0 THEN NULL ' .
+                        'CASE WHEN SUM(reviews.result) = 0 OR SUM(reviews.result) IS NULL THEN NULL ' .
                         'ELSE (CAST(SUM(CASE WHEN reviews.result = 1 THEN 1 ELSE 0 END) AS float) / SUM(CASE WHEN reviews.result = 0 THEN 0 ELSE 1 END)) ' .
-                        'END as success_rate'
+                        'END as rate, COUNT(reviews.id) as count'
                     )
-                        ->join('reviews', function($join) {
+                        ->leftJoin('reviews', function($join) {
                             $join->on('products.id', '=', 'reviews.product_id');
                             $join->whereNull('reviews.deleted_at');
                             $join->where('reviews.result', '!=', '0');
                         })
-                        ->orderBy('success_rate', 'DESC')
-                        ->groupBy('products.id');
+                        ->orderByRaw('rate DESC NULLS LAST, count DESC');
                     break;
                 case 5: // 「行きたい」「Like」が多い順
-                    $query->selectRaw('COUNT(wannas.id) as count')
-                        ->join('wannas', function($join) {
+                    $query->selectRaw('COUNT(wannas.id) as count, AVG(reviews.rating) as avg')
+                        ->leftJoin('wannas', function($join) {
                             $join->on('products.id', '=', 'wannas.product_id');
                         })
-                        ->orderBy('count', 'DESC')
-                        ->groupBy('products.id');
+                        ->leftJoin('reviews', function($join) {
+                            $join->on('products.id', '=', 'reviews.product_id');
+                        })
+                        ->orderByRaw('count DESC NULLS LAST, avg DESC');
                     break;
             }
         }
 
-        // $result = $query->toSql();
+        // For Debug
+        // $result = $query->groupBy('products.id')->toSql();
         // return Response::json(['sql' => $result], 200);
 
-        $result = $query->get();
+        $result = $query->groupBy('products.id')->paginate(10);
 
         return Response::json($result, 200);
     }
