@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Support\Facades\Response;
 use App\Models\Review;
 use App\Models\User;
+use App\Http\Requests\SearchRequest;
 
 use Illuminate\Support\Facades\DB;
 
@@ -139,17 +140,17 @@ class ProductController extends Controller
     /**
      * 検索 & 結果の返却
      * 
-     * @param Illuminate\Http\Request
+     * @param App\Http\Requests\SearchRequest
      * @return Illuminate\Support\Facades\Response
      */
-    public function search(Request $request) {
+    public function search(SearchRequest $request) {
         $query = Product::query()->select('products.*')
             ->with(['category', 'performances', 'performances.venue', 'organizer']);
 
         if ($request->query('keywords', false)) {
-            $query = $query->where('name', 'like', '%'. $request->query('keywords') . '%')
-                ->orWhere('kana_name', 'like', '%' . $request->query('keywords') . '%')
-                ->orWhere('phrase', 'like', '%' . $request->query('keywords') . '%');
+            $query = $query->whereRaw("name LIKE '%'||?||'%'", [$request->query('keywords')])
+                ->orWhereRaw("kana_name LIKE '%'||?||'%'", [$request->query('keywords')])
+                ->orWhereRaw("phrase LIKE '%'||?||'%'", [$request->query('keywords')]);
         }
 
         if ($request->query('organizer', false)) {
@@ -162,7 +163,13 @@ class ProductController extends Controller
 
         if ($request->query('venue', false)) {
             $query = $query->where('venue_id', $request->query('venue'))
-                ->leftJoin('performances', 'products.id', '=', 'performances.product_id');
+                ->join('performances', 'products.id', '=', 'performances.product_id');
+        }
+
+        if ($request->query('pref', false)) {
+            $query = $query->where('venues.addr_pref_id', $request->query('pref'))
+                ->join('performances', 'products.id', '=', 'performances.product_id')
+                ->join('venues', 'performances.venue_id', '=', 'venues.id');
         }
 
         if ($request->query('ranking', false)) {
