@@ -153,7 +153,7 @@ class ProductController extends Controller
         }
 
         if ($request->query('organizer', false)) {
-            $query = $query->where('organizer_id', $request->query('organizer'));
+            $query = $query->where('products.organizer_id', $request->query('organizer'));
         }
 
         if ($request->query('category', false)) {
