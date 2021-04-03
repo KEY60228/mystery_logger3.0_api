@@ -1,6 +1,6 @@
 FROM php:7.4-fpm-alpine3.12
 
-RUN apk add --update --no-cache --repository https://alpine.global.ssl.fastly.net postgresql-dev oniguruma-dev libjpeg-turbo-dev libpng-dev \ 
+RUN apk add --update --no-cache --repository http://alpine.gliderlabs.com/alpine/v3.12/main/ postgresql-dev oniguruma-dev libjpeg-turbo-dev libpng-dev \ 
     && docker-php-ext-install mbstring pgsql pdo_pgsql exif \
     && docker-php-ext-configure gd --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
