@@ -28,7 +28,7 @@ Route::post('/login', 'Auth\LoginController@login')->name('login');
 // ログアウト
 Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
 
-// 全作品取得
+// トップページ用
 Route::get('/products', 'ProductController@index')->name('product.index');
 
 // 一作品取得
@@ -90,6 +90,15 @@ Route::get('/venues/{venueId}', 'VenueController@show')->name('venue.show');
 
 // 同行者募集情報の取得
 Route::get('/accompanies', 'AccompanyController@index')->name('accompanies');
+
+// 団体一覧の取得 (検索用)
+Route::get('/search/organizers', 'OrganizerController@search')->name('search.organizers');
+
+// 会場一覧の取得 (検索用)
+Route::get('/search/venues', 'VenueController@search')->name('search.venues');
+
+// 検索結果の取得
+Route::get('/search', 'ProductController@search')->name('search.result');
 
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
