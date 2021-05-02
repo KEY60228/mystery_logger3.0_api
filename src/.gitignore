@@ -6,6 +6,8 @@
 .env
 .env.backup
 .env.prod
+.env.aws
+.env.sakura
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
