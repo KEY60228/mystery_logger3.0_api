@@ -16,7 +16,7 @@ class CheckHeader
      */
     public function handle($request, Closure $next)
     {
-        if ($request->header('X_NAZOLOG_TOKEN') !== env('X_NAZOLOG_TOKEN')) {
+        if ($request->header('X_NAZOLOG_TOKEN') !== config('myenv.X_NAZOLOG_TOKEN')) {
             return Response::json([
                 'message' => 'unexpected access.'
             ], 422);
