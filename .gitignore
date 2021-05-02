@@ -5,12 +5,7 @@
 log/
 
 # setting files
-nginx/laravel.conf
-nginx/nginx.conf
 nginx/ssl/
-php-fpm/php.ini
-php-fpm/php-fpm.conf
-php-fpm/zzz-www.conf
 
 # socket
 php-fpm/sock/
