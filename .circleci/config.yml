@@ -1,0 +1,122 @@
+version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@7.0.0
+  aws-ecs: circleci/aws-ecs@2.2.0
+  slack: circleci/slack@4.4.2
+
+executors:
+  test:
+    docker:
+      - image: circleci/php:7.3.0-node-browsers
+        environment:
+          DB_CONNECTION: circleci_testing
+      - image: circleci/postgres:12.3-alpine-ram
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: circleci_testing
+  build-and-deploy:
+    docker:
+      - image: circleci/python:3.9
+
+commands:
+  test:
+    steps:
+      - run:
+          name: apk add
+          command: apk add --update --no-cache --repository https://alpine.global.ssl.fastly.net postgresql-dev oniguruma-dev libjpeg-turbo-dev libpng-dev
+      - run:
+          name: docker php extensions install
+          command: docker-php-ext-install mbstring pgsql pdo_pgsql exif
+      - run:
+          name: docker php extensions configure
+          command: docker-php-ext-configure gd --with-jpeg=/usr/include
+      - run:
+          name: docker php extensions install
+          command: docker-php-ext-install -j$(nproc) gd
+      - run:
+          name: dockerize のインストール
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.3.0
+      - restore_cache:
+          keys:
+            - v1-dependencies={{ checksum "composer.json" }}
+      - run:
+          name: composer install
+          command: composer update --no-scripts --prefer-dist
+      - save_cache:
+          paths:
+            - ./vendor
+          key: v1-dependencies={{ checksum "composer.json" }}
+      - run:
+          name: DBの待機
+          command: dockerize -wait tcp://127.0.0.1:5432 -timeout 1m
+      - run:
+          name: test
+          command: ./vendor/bin/phpunit
+
+jobs:
+  test:
+    executor: 
+      name: test
+    environment:
+      DB_CONNECTION: circleci_testing
+    working_directory: ~/src
+    steps:
+      - checkout
+      - test
+  build-and-deploy:
+    executor: 
+      name: build-and-deploy
+    environment:
+      AWS_REGION: ap-northeast-1
+    working_directory: ~/src
+    steps:
+      - checkout
+      - aws-ecr/build-and-push-image:
+          region: ${AWS_REGION}
+          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+          repo: "nazolog-ecr-php"
+          dockerfile: "prod/php-fpm.Dockerfile"
+          tag: "${CIRCLE_SHA1}"
+      - aws-ecr/build-and-push-image:
+          region: ${AWS_REGION}
+          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+          repo: "nazolog-ecr-nginx"
+          dockerfile: "prod/nginx.Dockerfile"
+          tag: "${CIRCLE_SHA1}"
+      - aws-ecs/deploy-service-update:
+          requires:
+              - aws-ecr/build-and-push-image
+          family: 'nazolog-task'
+          cluster-name: 'nazolog-ecs-cluster'
+          service-name: 'nazolog-ecs-service'
+          container-image-name-updates: 'container=nazolog-php-fpm,tag=${CIRCLE_SHA1}'
+      - aws-ecs/deploy-service-update:
+          requires:
+              - aws-ecr/build-and-push-image
+          family: 'nazolog-task'
+          cluster-name: 'nazolog-ecs-cluster'
+          service-name: 'nazolog-ecs-service'
+          container-image-name-updates: 'container=nazolog-nginx,tag=${CIRCLE_SHA1}'
+      - migration:
+          name: php artisan migrate
+          command: aws ecs run-task --cluster nazolog-ecs-cluster --task-definition nazolog-migrate-task
+      - slack/status:
+          success_message: ':circleci-pass: API:$CIRCLE_BRANCHのデプロイが完了しました\n:github_octocat: User:$CIRCLECI_USERNAME'
+          failure_message: ':circleci-fail: API:$CIRCLE_BRANCHのデプロイが失敗しました\n:github_octocat: User:$CIRCLECI_USERNAME'
+          webhook: '${SLACK_WEBHOOK}'
+
+workflows:
+  version: 2
+  ci:
+    jobs:
+      - test
+  cd:
+    jobs:
+      - build-and-deploy:
+          filters:
+            branches:
+              only: master
