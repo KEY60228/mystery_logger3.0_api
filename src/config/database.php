@@ -110,8 +110,21 @@ return [
             'prefix_indexes' => true,
             'schema' => 'public',
             'sslmode' => 'prefer',
-        ]
+        ],
 
+        'circleci_testing' => [
+            'driver' => 'pgsql',
+            'host' => '127.0.0.1',
+            'port' => '5432',
+            'database' => 'circleci_testing',
+            'username' => 'postgres',
+            'password' => '',
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
     ],
 
     /*
