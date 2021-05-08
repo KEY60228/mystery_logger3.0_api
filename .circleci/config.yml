@@ -100,7 +100,6 @@ workflows:
     jobs:
       - aws-ecr/build-and-push-image:
           name: build-nginx
-          executor: build-and-deploy
           region: AWS_DEFAULT_REGION
           account-url: AWS_ECR_ACCOUNT_URL
           repo: "nazolog-ecr-nginx"
@@ -111,7 +110,6 @@ workflows:
               only: master
       - aws-ecr/build-and-push-image:
           name: build-php
-          executor: build-and-deploy
           region: AWS_DEFAULT_REGION
           account-url: AWS_ECR_ACCOUNT_URL
           repo: "nazolog-ecr-php"
