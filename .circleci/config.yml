@@ -2,30 +2,30 @@ version: 2.1
 
 orbs:
   aws-ecr: circleci/aws-ecr@7.0.0
-  aws-ecs: circleci/aws-ecs@2.2.0
+  aws-ecs: circleci/aws-ecs@2.2.1
   slack: circleci/slack@4.4.2
 
 executors:
   test:
     docker:
-      - image: circleci/php:7.3.0-node-browsers
+      - image: php:7.4-fpm-alpine3.12
         environment:
           DB_CONNECTION: circleci_testing
-      - image: circleci/postgres:12.3-alpine-ram
+      - image: circleci/postgres:12-alpine-ram
         environment:
           POSTGRES_USER: postgres
           POSTGRES_HOST_AUTH_METHOD: trust
           POSTGRES_DB: circleci_testing
   build-and-deploy:
     docker:
-      - image: circleci/python:3.9
+      - image: circleci/python:3.7.1
 
 commands:
   test:
     steps:
       - run:
           name: apk add
-          command: apk add --update --no-cache --repository https://alpine.global.ssl.fastly.net postgresql-dev oniguruma-dev libjpeg-turbo-dev libpng-dev
+          command: apk add --update --no-cache --repository http://alpine.gliderlabs.com/alpine/v3.12/main/ postgresql-dev oniguruma-dev libjpeg-turbo-dev libpng-dev
       - run:
           name: docker php extensions install
           command: docker-php-ext-install mbstring pgsql pdo_pgsql exif
@@ -37,77 +37,57 @@ commands:
           command: docker-php-ext-install -j$(nproc) gd
       - run:
           name: dockerize のインストール
-          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
           environment:
             DOCKERIZE_VERSION: v0.3.0
+      - run:
+          name: composerのインストール
+          command: |
+            php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
+            php -r "if (hash_file('sha384', 'composer-setup.php') === '756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" &&
+            php composer-setup.php &&
+            php -r "unlink('composer-setup.php');" &&
+            mv composer.phar /bin/composer
       - restore_cache:
           keys:
-            - v1-dependencies={{ checksum "composer.json" }}
+            - v1-dependencies={{ checksum "src/composer.json" }}
       - run:
           name: composer install
+          working_directory: src
           command: composer update --no-scripts --prefer-dist
       - save_cache:
           paths:
             - ./vendor
-          key: v1-dependencies={{ checksum "composer.json" }}
+          key: v1-dependencies={{ checksum "src/composer.json" }}
       - run:
           name: DBの待機
           command: dockerize -wait tcp://127.0.0.1:5432 -timeout 1m
       - run:
           name: test
+          working_directory: src
           command: ./vendor/bin/phpunit
 
 jobs:
   test:
     executor: 
       name: test
-    environment:
-      DB_CONNECTION: circleci_testing
-    working_directory: ~/src
     steps:
       - checkout
       - test
-  build-and-deploy:
-    executor: 
+  after-deploy:
+    executor:
       name: build-and-deploy
-    environment:
-      AWS_REGION: ap-northeast-1
-    working_directory: ~/src
     steps:
-      - checkout
-      - aws-ecr/build-and-push-image:
-          region: ${AWS_REGION}
-          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-          repo: "nazolog-ecr-php"
-          dockerfile: "prod/php-fpm.Dockerfile"
-          tag: "${CIRCLE_SHA1}"
-      - aws-ecr/build-and-push-image:
-          region: ${AWS_REGION}
-          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-          repo: "nazolog-ecr-nginx"
-          dockerfile: "prod/nginx.Dockerfile"
-          tag: "${CIRCLE_SHA1}"
-      - aws-ecs/deploy-service-update:
-          requires:
-              - aws-ecr/build-and-push-image
-          family: 'nazolog-task'
-          cluster-name: 'nazolog-ecs-cluster'
-          service-name: 'nazolog-ecs-service'
-          container-image-name-updates: 'container=nazolog-php-fpm,tag=${CIRCLE_SHA1}'
-      - aws-ecs/deploy-service-update:
-          requires:
-              - aws-ecr/build-and-push-image
-          family: 'nazolog-task'
-          cluster-name: 'nazolog-ecs-cluster'
-          service-name: 'nazolog-ecs-service'
-          container-image-name-updates: 'container=nazolog-nginx,tag=${CIRCLE_SHA1}'
-      - migration:
+      - run:
           name: php artisan migrate
           command: aws ecs run-task --cluster nazolog-ecs-cluster --task-definition nazolog-migrate-task
-      - slack/status:
-          success_message: ':circleci-pass: API:$CIRCLE_BRANCHのデプロイが完了しました\n:github_octocat: User:$CIRCLECI_USERNAME'
-          failure_message: ':circleci-fail: API:$CIRCLE_BRANCHのデプロイが失敗しました\n:github_octocat: User:$CIRCLECI_USERNAME'
-          webhook: '${SLACK_WEBHOOK}'
+      - slack/notify:
+          event: fail
+          mentions: '@やまぐち'
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
 workflows:
   version: 2
@@ -116,7 +96,54 @@ workflows:
       - test
   cd:
     jobs:
-      - build-and-deploy:
+      - aws-ecr/build-and-push-image:
+          name: build-nginx
+          region: AWS_DEFAULT_REGION
+          account-url: AWS_ECR_ACCOUNT_URL
+          repo: "nazolog-ecr-nginx"
+          dockerfile: "prod/nginx.Dockerfile"
+          tag: "${CIRCLE_SHA1}"
+          filters:
+            branches:
+              only: master
+      - aws-ecr/build-and-push-image:
+          name: build-php
+          region: AWS_DEFAULT_REGION
+          account-url: AWS_ECR_ACCOUNT_URL
+          repo: "nazolog-ecr-php"
+          dockerfile: "prod/php-fpm.Dockerfile"
+          tag: "${CIRCLE_SHA1}"
+          filters:
+            branches:
+              only: master
+      - aws-ecs/deploy-service-update:
+          name: deploy-nginx
+          requires:
+              - build-nginx
+              - build-php
+          family: 'nazolog-task'
+          cluster-name: 'nazolog-ecs-cluster'
+          service-name: 'nazolog-ecs-service'
+          container-image-name-updates: 'container=nazolog-nginx,tag=${CIRCLE_SHA1}'
+          filters:
+            branches:
+              only: master
+      - aws-ecs/deploy-service-update:
+          name: deploy-php
+          requires:
+              - build-nginx
+              - build-php
+          family: 'nazolog-task'
+          cluster-name: 'nazolog-ecs-cluster'
+          service-name: 'nazolog-ecs-service'
+          container-image-name-updates: 'container=nazolog-php-fpm,tag=${CIRCLE_SHA1}'
+          filters:
+            branches:
+              only: master
+      - after-deploy:
+          requires:
+              - deploy-nginx
+              - deploy-php
           filters:
             branches:
               only: master
