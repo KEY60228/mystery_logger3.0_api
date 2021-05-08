@@ -4,7 +4,7 @@ WORKDIR /var/app/
 COPY src/ .
 # RUN composer update --no-dev --no-scripts --optimize-autoloader  \
 RUN composer update --no-scripts --optimize-autoloader \
-    composer dump-autoload --optimize
+    composer dump-autoload -o
 
 # マルチステージビルド
 FROM php:7.4-fpm-alpine3.12
