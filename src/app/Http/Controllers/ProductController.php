@@ -62,7 +62,7 @@ class ProductController extends Controller
             ->selectRaw('DISTINCT ON (venues.addr_pref_id) products.*, venues.addr_prefecture, venues.addr_pref_id')
             ->join('performances', 'products.id', '=', 'performances.product_id')
             ->join('venues', function($join) {
-                $join->on('venues.id', '=', 'performances.product_id');
+                $join->on('venues.id', '=', 'performances.venue_id');
                 $join->whereNotNull('venues.addr_pref_id');
             })
             ->orderBy('venues.addr_pref_id', 'ASC')

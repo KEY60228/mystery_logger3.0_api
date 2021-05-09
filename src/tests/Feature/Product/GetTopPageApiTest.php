@@ -62,53 +62,53 @@ class GetTopPageApiTest extends TestCase
 
         $response->assertStatus(200)->assertJson([
             'products_sortby_ratings' => [[
-                // 'id' => $this->product->id,
+                'id' => $this->product->id,
                 // 'name' => $this->product->name,
                 // 'reviews_count' => (Integer)$reviewCount,
                 // 'avg_rating' => round($avgRating, 2),
                 // 'success_rate' => round($successRate, 2),
             ]],
             'products_sortby_reviews_count' => [[
-                // 'id' => $this->product->id,
+                'id' => $this->product->id,
                 // 'name' => $this->product->name,
                 // 'reviews_count' => (Integer)$reviewCount,
                 // 'avg_rating' => round($avgRating, 2),
                 // 'success_rate' => round($successRate, 2),
             ]],
             'products_sortby_success_rate' => [[
-                // 'id' => $this->product->id,
+                'id' => $this->product->id,
                 // 'name' => $this->product->name,
                 // 'reviews_count' => (Integer)$reviewCount,
                 // 'avg_rating' => round($avgRating, 2),
                 // 'success_rate' => round($successRate, 2),
             ]],
             'products_categorizeby_organizer' => [[
-                // 'id' => $this->product->id,
+                'id' => $this->product->id,
                 // 'name' => $this->product->name,
                 // 'reviews_count' => (Integer)$reviewCount,
                 // 'avg_rating' => round($avgRating, 2),
                 // 'success_rate' => round($successRate, 2),
             ]],
             'products_categorizeby_venue' => [[
-                // ' => $this->product->id,
+                'id' => $this->product->id,
                 // 'name' => $this->product->name,
                 // 'reviews_count' => (Integer)$reviewCount,
                 // 'avg_rating' => round($avgRating, 2),
                 // 'success_rate' => round($successRate, 2),
             ]],
             'products_categorizeby_category' => [[
-                // ' => $this->product->id,
+                'id' => $this->product->id,
                 // 'name' => $this->product->name,
                 // 'reviews_count' => (Integer)$reviewCount,
                 // 'avg_rating' => round($avgRating, 2),
                 // 'success_rate' => round($successRate, 2),
             ]],
             'users_sortby_reviews_count' => [[
-                // ' => $this->user->id,
+                'id' => $this->user->id,
                 // 'name' => $this->user->name,
             ]],
             'users_sortby_success_rate' => [[
-                // ' => $this->user->id,
+                'id' => $this->user->id,
                 // 'name' => $this->user->name,
             ]],
         ]);
