@@ -58,8 +58,13 @@ commands:
           command: composer update --no-scripts --prefer-dist
       - save_cache:
           paths:
-            - ./vendor
+            - ./src/vendor
           key: v1-dependencies={{ checksum "src/composer.json" }}
+      - run:
+          name: laravel setup
+          command: |
+            cp .env.example .env && \
+            php artisan key:generate
       - run:
           name: DBの待機
           command: dockerize -wait tcp://127.0.0.1:5432 -timeout 1m
