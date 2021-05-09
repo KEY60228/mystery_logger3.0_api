@@ -25,6 +25,7 @@ class GetVenueApiTest extends TestCase
         ]);
         $this->product = factory(Product::class)->create([
             'organizer_id' => $this->organizer->id,
+            'category_id' => $this->category->id,
         ]);
         $this->performance = factory(Performance::class)->create([
             'venue_id' => $this->venue->id,
