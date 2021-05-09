@@ -26,8 +26,8 @@ class UpdateUserApiTest extends TestCase
     public function 正常系()
     {
         // テスト用ストレージ
-        Storage::fake('public');
-        // Storage::fake('s3');
+        // Storage::fake('public');
+        Storage::fake('s3');
 
         $response = $this->actingAs($this->user)->json('PUT', route('user.update'), [
             'name' => 'guest',
