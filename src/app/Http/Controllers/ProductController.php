@@ -46,10 +46,20 @@ class ProductController extends Controller
             ->get();
 
         // 成功率の低い作品10本
-        $tmp_products = Product::query()
-            ->whereIn('products.id', Review::query()->select('reviews.product_id'))
+        // $tmp_products = Product::query()
+        //     ->whereIn('products.id', Review::query()->select('reviews.product_id'))
+        //     ->get();
+        // $products_sortby_success_rate = $tmp_products->sortBy('success_rate')->slice(0, 9)->values();
+        $sub_tmp_table = Review::query()
+            ->selectRaw('reviews.product_id, CASE WHEN (SELECT COUNT(*) FROM reviews r1 WHERE r1.product_id = reviews.product_id) = (SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 2 AND r1.product_id = reviews.product_id) THEN NULL ELSE CAST((SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 1 AND r1.product_id = reviews.product_id) AS NUMERIC) / ((SELECT COUNT(*) FROM reviews r1 WHERE r1.product_id = reviews.product_id) - (SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 2 AND r1.product_id = reviews.product_id)) END AS success_rate')
+            ->groupBy('reviews.product_id');
+        $products_sortby_success_rate = Product::query()
+            ->joinSub($sub_tmp_table, 'sub_tmp_table', function($join) {
+                $join->on('products.id', '=', 'sub_tmp_table.product_id');
+            })
+            ->orderBy('success_rate', 'ASC')
+            ->limit(10)
             ->get();
-        $products_sortby_success_rate = $tmp_products->sortBy('success_rate')->slice(0, 9)->values();
 
         // 主催団体別に1本抽出
         $products_categorizeby_organizer = Product::query()
@@ -88,10 +98,20 @@ class ProductController extends Controller
             ->get();
 
         // 脱出率の高いユーザーTOP10
-        $tmp_users = User::query()
-            ->whereIn('users.id', Review::query()->select('reviews.user_id'))
+        // $tmp_users = User::query()
+        //     ->whereIn('users.id', Review::query()->select('reviews.user_id'))
+        //     ->get();
+        // $users_sortby_success_rate = $tmp_users->sortByDesc('success_rate')->slice(0, 9)->values();
+        $sub_tmp_table = Review::query()
+            ->selectRaw('reviews.user_id, CASE WHEN (SELECT COUNT(*) FROM reviews r1 WHERE r1.user_id = reviews.user_id) = (SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 2 AND r1.user_id = reviews.user_id) THEN NULL ELSE CAST((SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 1 AND r1.user_id = reviews.user_id) AS NUMERIC) / ((SELECT COUNT(*) FROM reviews r1 WHERE r1.user_id = reviews.user_id) - (SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 2 AND r1.user_id = reviews.user_id)) END AS success_rate')
+            ->groupBy('reviews.user_id');
+        $users_sortby_success_rate = User::query()
+            ->joinSub($sub_tmp_table, 'sub_tmp_table', function($join) {
+                $join->on('users.id', '=', 'sub_tmp_table.user_id');
+            })
+            ->orderBy('success_rate', 'DESC')
+            ->limit(10)
             ->get();
-        $users_sortby_success_rate = $tmp_users->sortByDesc('success_rate')->slice(0, 9)->values();
 
         $response = [
             'products_sortby_ratings' => $products_sortby_ratings->all(),
