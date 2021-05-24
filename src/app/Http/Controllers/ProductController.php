@@ -30,7 +30,8 @@ class ProductController extends Controller
             ->havingRaw('AVG(reviews.rating) > 0')
             ->orderBy('avg', 'desc')
             ->limit(10)
-            ->get();
+            ->get()
+            ->all();
 
         // 投稿数の多い作品10本
         $products_sortby_reviews_count = Product::query()
@@ -43,19 +44,38 @@ class ProductController extends Controller
             ->havingRaw('COUNT(reviews.*) > 0')
             ->orderBy('count', 'desc')
             ->limit(10)
-            ->get();
+            ->get()
+            ->all();
 
         // 成功率の低い作品10本
-        $tmp_products = Product::query()
-            ->whereIn('products.id', Review::query()->select('reviews.product_id'))
-            ->get();
-        $products_sortby_success_rate = $tmp_products->sortBy('success_rate')->slice(0, 9)->values();
+        // $tmp_products = Product::query()
+        //     ->whereIn('products.id', Review::query()->select('reviews.product_id'))
+        //     ->get();
+        // $products_sortby_success_rate = $tmp_products->sortBy('success_rate')->slice(0, 9)->values();
+        $sub_tmp_table = Review::query()
+            ->selectRaw(
+                'reviews.product_id, ' .
+                'CASE WHEN (SELECT COUNT(*) FROM reviews r1 WHERE r1.product_id = reviews.product_id) = (SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 0 AND r1.product_id = reviews.product_id) ' .
+                    'THEN NULL ' .
+                    'ELSE CAST((SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 1 AND r1.product_id = reviews.product_id) AS NUMERIC) / ((SELECT COUNT(*) FROM reviews r1 WHERE r1.product_id = reviews.product_id) - (SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 0 AND r1.product_id = reviews.product_id)) ' .
+                'END AS success_rate'
+            )
+            ->groupBy('reviews.product_id');
+        $products_sortby_success_rate = Product::query()
+            ->joinSub($sub_tmp_table, 'sub_tmp_table', function($join) {
+                $join->on('products.id', '=', 'sub_tmp_table.product_id');
+            })
+            ->orderByRaw('success_rate ASC NULLS LAST')
+            ->limit(10)
+            ->get()
+            ->all();
 
         // 主催団体別に1本抽出
         $products_categorizeby_organizer = Product::query()
             ->selectRaw('DISTINCT ON (products.organizer_id) products.*, organizers.service_name AS organizer_name')
             ->join('organizers', 'organizers.id', '=', 'products.organizer_id')
-            ->get();
+            ->get()
+            ->all();
 
         // 都道府県別に1本抽出
         $products_categorizeby_venue = Product::query()
@@ -66,13 +86,16 @@ class ProductController extends Controller
                 $join->whereNotNull('venues.addr_pref_id');
             })
             ->orderBy('venues.addr_pref_id', 'ASC')
-            ->get();
+            ->get()
+            ->all();
 
         // カテゴリー別に1本抽出
         $products_categorizeby_category = Product::query()
             ->selectRaw('DISTINCT ON (categories.id) products.*, categories.name AS category_name')
             ->join('categories', 'categories.id', '=', 'products.category_id')
-            ->get();
+            ->get()
+            ->all();
+
 
         // 参加数の多いユーザーTOP10
         $users_sortby_reviews_count = User::query()
@@ -85,23 +108,40 @@ class ProductController extends Controller
             ->havingRaw('COUNT(reviews.*) > 0')
             ->orderBy('count', 'DESC')
             ->limit(10)
-            ->get();
+            ->get()
+            ->all();
 
         // 脱出率の高いユーザーTOP10
-        $tmp_users = User::query()
-            ->whereIn('users.id', Review::query()->select('reviews.user_id'))
-            ->get();
-        $users_sortby_success_rate = $tmp_users->sortByDesc('success_rate')->slice(0, 9)->values();
+        // $tmp_users = User::query()
+        //     ->whereIn('users.id', Review::query()->select('reviews.user_id'))
+        //     ->get();
+        // $users_sortby_success_rate = $tmp_users->sortByDesc('success_rate')->slice(0, 9)->values();
+        $sub_tmp_table = Review::query()
+            ->selectRaw(
+                'reviews.user_id, ' .
+                'CASE WHEN (SELECT COUNT(*) FROM reviews r1 WHERE r1.user_id = reviews.user_id) = (SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 0 AND r1.user_id = reviews.user_id) ' .
+                    'THEN NULL ' .
+                    'ELSE CAST((SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 1 AND r1.user_id = reviews.user_id) AS NUMERIC) / ((SELECT COUNT(*) FROM reviews r1 WHERE r1.user_id = reviews.user_id) - (SELECT COUNT(*) FROM reviews r1 WHERE r1.result = 0 AND r1.user_id = reviews.user_id)) ' .
+                'END AS success_rate')
+            ->groupBy('reviews.user_id');
+        $users_sortby_success_rate = User::query()
+            ->joinSub($sub_tmp_table, 'sub_tmp_table', function($join) {
+                $join->on('users.id', '=', 'sub_tmp_table.user_id');
+            })
+            ->orderByRaw('success_rate DESC NULLS LAST')
+            ->limit(10)
+            ->get()
+            ->all();
 
         $response = [
-            'products_sortby_ratings' => $products_sortby_ratings->all(),
-            'products_sortby_reviews_count' => $products_sortby_reviews_count->all(),
-            'products_sortby_success_rate' => $products_sortby_success_rate->all(),
-            'products_categorizeby_organizer' => $products_categorizeby_organizer->all(),
-            'products_categorizeby_venue' => $products_categorizeby_venue->all(),
-            'products_categorizeby_category' => $products_categorizeby_category->all(),
-            'users_sortby_reviews_count' => $users_sortby_reviews_count->all(),
-            'users_sortby_success_rate' => $users_sortby_success_rate->all(),
+            'products_sortby_ratings' => $products_sortby_ratings,
+            'products_sortby_reviews_count' => $products_sortby_reviews_count,
+            'products_sortby_success_rate' => $products_sortby_success_rate,
+            'products_categorizeby_organizer' => $products_categorizeby_organizer,
+            'products_categorizeby_venue' => $products_categorizeby_venue,
+            'products_categorizeby_category' => $products_categorizeby_category,
+            'users_sortby_reviews_count' => $users_sortby_reviews_count,
+            'users_sortby_success_rate' => $users_sortby_success_rate,
         ];
 
         return Response::json($response, 200);
