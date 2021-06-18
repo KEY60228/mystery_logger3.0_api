@@ -94,11 +94,14 @@ class UserController extends Controller
                 $filename .= $chars[array_rand($chars)];
             }
             $filename .= '.' . $extension;
-            
-            // ファイル保存 (開発環境)
-            // Storage::disk('public')->putFileAs('/user_img', $request->image_name, $filename);
-            // ファイル保存 (S3環境)
-            Storage::disk('s3')->putFileAs('/storage/user_img', $request->image_name, $filename);
+
+            if (app()->isLocal()) {
+                // ファイル保存 (開発環境)
+                Storage::disk('public')->putFileAs('/user_img', $request->image_name, $filename);
+            } else {
+                // ファイル保存 (S3環境)
+                Storage::disk('s3')->putFileAs('/storage/user_img', $request->image_name, $filename);
+            }
     
             // DBエラー時にファイル削除するためトランザクション開始
             DB::beginTransaction();
@@ -113,11 +116,6 @@ class UserController extends Controller
                     'image_name' => '/storage/user_img/' . $filename,
                 ]);
                 DB::commit();
-
-                // // 成功時元ファイル削除
-                // if ($ex_filename !== '/storage/user_img/default.jpeg') {
-                //     Storage::disk('public')->delete(substr($ex_filename, 9));
-                // }
             } catch (\Exception $e) {
                 DB::rollback();
                 // 失敗時ファイル削除
