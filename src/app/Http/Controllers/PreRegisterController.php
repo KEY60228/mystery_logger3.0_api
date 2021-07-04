@@ -35,8 +35,32 @@ class PreRegisterController extends Controller
             ]);
         }
 
-        $mail = new EmailVerification($preRegister);
-        Mail::to($preRegister->email)->send($mail);
+        if (app()->isLocal()) {
+            $mail = new EmailVerification($preRegister);
+            Mail::to($preRegister->email)->send($mail);
+        } else {
+            $sqs = app()->make('aws')->createClient('sqs');
+            $params = [
+                'DelaySeconds' => 0,
+                'MessageBody' => 'nazolog/preregister/mail',
+                'QueueUrl' => config('aws.sqs.url'),
+                'MessageAttributes' => [
+                    'email' => [
+                        'DataType' => 'String',
+                        'StringValue' => $preRegister->email,
+                    ],
+                    'token' => [
+                        'DataType' => 'String',
+                        'StringValue' => $preRegister->token,
+                    ],
+                    'expiration_time' => [
+                        'DataType' => 'String',
+                        'StringValue' => $preRegister->expiration_time
+                    ]
+                ],
+            ];
+            $sqs->sendMessage($params);
+        }
 
         return Response::json([], 201);
     }
