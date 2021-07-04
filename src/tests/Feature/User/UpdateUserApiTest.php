@@ -43,8 +43,8 @@ class UpdateUserApiTest extends TestCase
             'profile' => 'よろです！！',
         ]);
         $user = User::first();
-        // Storage::disk('public')->assertExists(substr($user->image_name, 9));
-        Storage::disk('s3')->assertExists($user->image_name);
+        Storage::disk('public')->assertExists(substr($user->image_name, 9));
+        // Storage::disk('s3')->assertExists($user->image_name);
     }
 
     /**
