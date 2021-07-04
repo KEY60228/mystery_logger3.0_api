@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Cache;
+use App\Models\Product;
 use App\Models\Review;
 use App\Models\User;
 
@@ -19,6 +20,11 @@ class ProductController extends Controller
      * @return Illuminate\Support\Facades\Response
      */
     public function index(Request $request) {
+        if (Cache::has('TopPageResponse')) {
+            $response = Cache::get('TopPageResponse');
+            return Response::json($response, 200);
+        }
+
         // 評価の高い作品10本
         $products_sortby_ratings = Product::query()
             ->selectRaw('products.*, AVG(reviews.rating) as avg')
@@ -143,6 +149,8 @@ class ProductController extends Controller
             'users_sortby_reviews_count' => $users_sortby_reviews_count,
             'users_sortby_success_rate' => $users_sortby_success_rate,
         ];
+
+        Cache::put('TopPageResponse', $response, 3600);
 
         return Response::json($response, 200);
     }
