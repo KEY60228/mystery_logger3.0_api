@@ -72,4 +72,6 @@ ID: guest@guest.com
 
 Pass: guestguest
 
+---
+
 <b id="f1">1</b>: 「リアル脱出ゲーム」は株式会社SCRUPの登録商標です。[↩](#a1)
